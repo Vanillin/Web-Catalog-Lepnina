@@ -41,11 +41,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dto\ExampleDto.cs" />
+    <Compile Include="Dto\ProductDto.cs" />
+    <Compile Include="Dto\ReviewDto.cs" />
+    <Compile Include="Dto\SectionDto.cs" />
+    <Compile Include="Dto\UserDto.cs" />
+    <Compile Include="Dto\UserProductDto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\IRepositExampleDto.cs" />
+    <Compile Include="Services\IRepositProductDto.cs" />
+    <Compile Include="Services\IRepositReviewDto.cs" />
+    <Compile Include="Services\IRepositSectionDto.cs" />
+    <Compile Include="Services\IRepositUserDto.cs" />
+    <Compile Include="Services\IRepositUserProductDto.cs" />
+    <Compile Include="Services\RepositExampleDto.cs" />
+    <Compile Include="Services\RepositProductDto.cs" />
+    <Compile Include="Services\RepositReviewDto.cs" />
+    <Compile Include="Services\RepositSectionDto.cs" />
+    <Compile Include="Services\RepositUserDto.cs" />
+    <Compile Include="Services\RepositUserProductDto.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Dto\" />
-    <Folder Include="Services\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

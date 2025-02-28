@@ -42,9 +42,25 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\IRepositProduct.cs" />
+    <Compile Include="Repositories\IRepositUserProduct.cs" />
+    <Compile Include="Repositories\IRepositUser.cs" />
+    <Compile Include="Repositories\IRepositSection.cs" />
+    <Compile Include="Repositories\IRepositReview.cs" />
+    <Compile Include="Repositories\IRepositExample.cs" />
+    <Compile Include="Repositories\RepositExample.cs" />
+    <Compile Include="Repositories\RepositProduct.cs" />
+    <Compile Include="Repositories\RepositReview.cs" />
+    <Compile Include="Repositories\RepositSection.cs" />
+    <Compile Include="Repositories\RepositUser.cs" />
+    <Compile Include="Repositories\RepositUserProduct.cs" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Repositories\" />
+    <ProjectReference Include="..\Domain\Domain.csproj">
+      <Project>{315167cc-d1a6-49f2-a592-915cf1f8370a}</Project>
+      <Name>Domain</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
