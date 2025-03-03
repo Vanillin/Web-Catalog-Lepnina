@@ -1,6 +1,6 @@
-﻿namespace Application.Dto
+﻿namespace Domain.Entities
 {
-    public class ProductDto
+    public class Product
     {
         public int Id;
         public double Length;

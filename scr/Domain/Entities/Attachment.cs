@@ -1,11 +1,10 @@
-﻿namespace Application.Dto
+﻿namespace Domain.Entities
 {
-    public class ReviewDto
+    public class Attachment
     {
         public int Id;
         public string Message;
         public string PathPicture;
-        public int IdUser;
         public int IdProduct;
     }
 }

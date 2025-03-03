@@ -1,6 +1,6 @@
-﻿namespace Application.Dto
+﻿namespace Domain.Entities
 {
-    public class ReviewDto
+    public class Review
     {
         public int Id;
         public string Message;
