@@ -214,7 +214,7 @@ public class WebCatalogController : ControllerBase
     [HttpGet("favorites {idU} {idP}")]
     public async Task<IActionResult> GetFavoritesByIdAsync([FromQuery] int idU, [FromQuery] int idP)
     {
-        var quiz = await _serviceFavorites.ReadById(idU, idU);
+        var quiz = await _serviceFavorites.ReadById(idU, idP);
         return Ok(quiz);
     }
 
@@ -235,7 +235,7 @@ public class WebCatalogController : ControllerBase
     [HttpDelete("favorites {idU} {idP}")]
     public async Task<IActionResult> DeleteFavorites([FromQuery] int idU, [FromQuery] int idP)
     {
-        var result = await _serviceFavorites.Delete(idU, idU);
+        var result = await _serviceFavorites.Delete(idU, idP);
         return Ok(result);
     }
     #endregion
