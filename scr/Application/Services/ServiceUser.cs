@@ -1,37 +1,45 @@
 ﻿using Application.Dto;
+using AutoMapper;
+using Domain.Entities;
 using Infrastructure.Repositories;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Application.Services
 {
     public class ServiceUser : IServiceUser
     {
         private IRepositUser _repositUser;
-        public ServiceUser(IRepositUser repositUser)
+        private IMapper _mapper;
+        public ServiceUser(IRepositUser repositUser, IMapper mapper)
         {
             _repositUser = repositUser;
+            _mapper = mapper;
         }
 
-        public Task Create(UserDto element)
+        public async Task Create(UserDto element)
         {
-            throw new System.NotImplementedException();
+            var mapElem = _mapper.Map<User>(element);
+            if (mapElem != null) await _repositUser.Create(mapElem);
         }
-        public Task<bool> Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            throw new System.NotImplementedException();
+            return await _repositUser.Delete(id);
         }
-        public Task<List<UserDto>> ReadAll()
+        public async Task<List<UserDto>> ReadAll()
         {
-            throw new System.NotImplementedException();
+            var allElem = await _repositUser.ReadAll();
+            var mapAllElem = allElem.Select(q => _mapper.Map<UserDto>(q)).ToList();
+            return mapAllElem;
         }
-        public Task<UserDto> ReadById(int id)
+        public async Task<UserDto> ReadById(int id)
         {
-            throw new System.NotImplementedException();
+            var element = await _repositUser.ReadById(id);
+            var mapElem = _mapper.Map<UserDto>(element);
+            return mapElem;
         }
-        public Task<bool> Update(UserDto element)
+        public async Task<bool> Update(UserDto element)
         {
-            throw new System.NotImplementedException();
+            var mapElem = _mapper.Map<User>(element);
+            return await _repositUser.Update(mapElem);
         }
     }
 }

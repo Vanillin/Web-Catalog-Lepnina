@@ -1,37 +1,45 @@
 ﻿using Application.Dto;
+using AutoMapper;
+using Domain.Entities;
 using Infrastructure.Repositories;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Application.Services
 {
     public class ServiceAttachment : IServiceAttachment
     {
         private IRepositAttachment _repositExample;
-        public ServiceAttachment(IRepositAttachment repositExample)
+        private IMapper _mapper;
+        public ServiceAttachment(IRepositAttachment repositExample, IMapper mapper)
         {
             _repositExample = repositExample;
+            _mapper = mapper;
         }
 
-        public Task Create(AttachmentDto element)
+        public async Task Create(AttachmentDto element)
         {
-            throw new System.NotImplementedException();
+            var mapElem = _mapper.Map<Attachment>(element);
+            if (mapElem != null) await _repositExample.Create(mapElem);
         }
-        public Task<bool> Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            throw new System.NotImplementedException();
+            return await _repositExample.Delete(id);
         }
-        public Task<List<AttachmentDto>> ReadAll()
+        public async Task<List<AttachmentDto>> ReadAll()
         {
-            throw new System.NotImplementedException();
+            var allElem = await _repositExample.ReadAll();
+            var mapAllElem = allElem.Select(q => _mapper.Map<AttachmentDto>(q)).ToList();
+            return mapAllElem;
         }
-        public Task<AttachmentDto> ReadById(int id)
+        public async Task<AttachmentDto> ReadById(int id)
         {
-            throw new System.NotImplementedException();
+            var elem = await _repositExample.ReadById(id);
+            var mapElem = _mapper.Map<AttachmentDto>(elem);
+            return mapElem;
         }
-        public Task<bool> Update(AttachmentDto element)
+        public async Task<bool> Update(AttachmentDto element)
         {
-            throw new System.NotImplementedException();
+            var mapElem = _mapper.Map<Attachment>(element);
+            return await _repositExample.Update(mapElem);
         }
     }
 }

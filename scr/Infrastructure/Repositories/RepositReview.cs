@@ -11,6 +11,23 @@ namespace Infrastructure.Repositories
         public RepositReview()
         {
             _reviews = new List<Review>();
+
+            _reviews.Add(new Review()
+            {
+                Id = 1,
+                Message = "firstmessage",
+                PathPicture = "firstpath",
+                IdUser = 1,
+                IdProduct = 2,
+            });
+            _reviews.Add(new Review()
+            {
+                Id = 2,
+                Message = "secondmessage",
+                PathPicture = "secondpath",
+                IdUser = 3,
+                IdProduct = 1,
+            });
         }
 
         private Review Find(int id)

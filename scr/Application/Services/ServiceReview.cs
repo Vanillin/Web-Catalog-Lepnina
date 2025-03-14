@@ -1,37 +1,45 @@
 ﻿using Application.Dto;
+using AutoMapper;
+using Domain.Entities;
 using Infrastructure.Repositories;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Application.Services
 {
     public class ServiceReview : IServiceReview
     {
         private IRepositReview _repositReview;
-        public ServiceReview(IRepositReview repositReview)
+        private IMapper _mapper;
+        public ServiceReview(IRepositReview repositReview, IMapper mapper)
         {
             _repositReview = repositReview;
+            _mapper = mapper;
         }
 
-        public Task Create(ReviewDto element)
+        public async Task Create(ReviewDto element)
         {
-            throw new System.NotImplementedException();
+            var mapElem = _mapper.Map<Review>(element);
+            if (mapElem != null) await _repositReview.Create(mapElem);
         }
-        public Task<bool> Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            throw new System.NotImplementedException();
+            return await _repositReview.Delete(id);
         }
-        public Task<List<ReviewDto>> ReadAll()
+        public async Task<List<ReviewDto>> ReadAll()
         {
-            throw new System.NotImplementedException();
-        }        
-        public Task<ReviewDto> ReadById(int id)
-        {
-            throw new System.NotImplementedException();
+            var allElem = await _repositReview.ReadAll();
+            var mapAllElem = allElem.Select(q => _mapper.Map<ReviewDto>(q)).ToList();
+            return mapAllElem;
         }
-        public Task<bool> Update(ReviewDto element)
+        public async Task<ReviewDto> ReadById(int id)
         {
-            throw new System.NotImplementedException();
+            var element = await _repositReview.ReadById(id);
+            var mapElem = _mapper.Map<ReviewDto>(element);
+            return mapElem;
+        }
+        public async Task<bool> Update(ReviewDto element)
+        {
+            var mapElem = _mapper.Map<Review>(element);
+            return await _repositReview.Update(mapElem);
         }
     }
 }

@@ -11,6 +11,40 @@ namespace Infrastructure.Repositories
         public RepositProduct()
         {
             _products = new List<Product>();
+
+            _products.Add(new Product()
+            {
+                Id = 1,
+                Length = 50,
+                Height = 50,
+                Width = 50,
+                Priсe = 100,
+                Discount = 0,
+                PathPicture = "firsticon",
+                IdSection = 1,
+            });
+            _products.Add(new Product()
+            {
+                Id = 2,
+                Length = 50,
+                Height = 50,
+                Width = 50,
+                Priсe = 100,
+                Discount = 0,
+                PathPicture = "secondicon",
+                IdSection = 1,
+            });
+            _products.Add(new Product()
+            {
+                Id = 3,
+                Length = 50,
+                Height = 50,
+                Width = 50,
+                Priсe = 100,
+                Discount = 0,
+                PathPicture = "thirdicon",
+                IdSection = 2,
+            });
         }
 
         private Product Find(int id)

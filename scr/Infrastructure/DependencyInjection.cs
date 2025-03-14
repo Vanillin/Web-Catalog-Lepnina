@@ -1,7 +1,7 @@
 ﻿using Infrastructure.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Infrostracture
+namespace Infrastructure
 {
     public static class DependencyInjection
     {
@@ -12,7 +12,7 @@ namespace Infrostracture
             services.AddSingleton<IRepositReview, RepositReview>();
             services.AddSingleton<IRepositSection, RepositSection>();
             services.AddSingleton<IRepositUser, RepositUser>();
-            services.AddSingleton<IRepositUserProduct, RepositUserProduct>();
+            services.AddSingleton<IRepositFavorites, RepositFavorites>();
 
             return services;
         }

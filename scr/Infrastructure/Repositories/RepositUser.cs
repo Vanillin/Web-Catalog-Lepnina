@@ -1,7 +1,4 @@
 ﻿using Domain.Entities;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
@@ -11,6 +8,25 @@ namespace Infrastructure.Repositories
         public RepositUser()
         {
             _users = new List<User>();
+
+            _users.Add(new User()
+            {
+                Id = 1,
+                Name = "firstuser",
+                PathIcon = "firstusericon"
+            });
+            _users.Add(new User()
+            {
+                Id = 2,
+                Name = "seconduser",
+                PathIcon = "secondusericon"
+            });
+            _users.Add(new User()
+            {
+                Id = 3,
+                Name = "thirduser",
+                PathIcon = "thirdusericon"
+            });
         }
 
         private User Find(int id)

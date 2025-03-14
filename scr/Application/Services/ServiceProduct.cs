@@ -1,37 +1,45 @@
 ﻿using Application.Dto;
+using AutoMapper;
+using Domain.Entities;
 using Infrastructure.Repositories;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Application.Services
 {
     public class ServiceProduct : IServiceProduct
     {
         private IRepositProduct _repositProduct;
-        public ServiceProduct(IRepositProduct repositProduct)
+        private IMapper _mapper;
+        public ServiceProduct(IRepositProduct repositProduct, IMapper mapper)
         {
             _repositProduct = repositProduct;
+            _mapper = mapper;
         }
 
-        public Task Create(ProductDto element)
+        public async Task Create(ProductDto element)
         {
-            throw new System.NotImplementedException();
+            var mapElem = _mapper.Map<Product>(element);
+            if (mapElem != null) await _repositProduct.Create(mapElem);
         }
-        public Task<bool> Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            throw new System.NotImplementedException();
+            return await _repositProduct.Delete(id);
         }
-        public Task<List<ProductDto>> ReadAll()
+        public async Task<List<ProductDto>> ReadAll()
         {
-            throw new System.NotImplementedException();
+            var allElem = await _repositProduct.ReadAll();
+            var mapAllElem = allElem.Select(q => _mapper.Map<ProductDto>(q)).ToList();
+            return mapAllElem;
         }
-        public Task<ProductDto> ReadById(int id)
+        public async Task<ProductDto> ReadById(int id)
         {
-            throw new System.NotImplementedException();
+            var element = await _repositProduct.ReadById(id);
+            var mapElem = _mapper.Map<ProductDto>(element);
+            return mapElem;
         }
-        public Task<bool> Update(ProductDto element)
+        public async Task<bool> Update(ProductDto element)
         {
-            throw new System.NotImplementedException();
+            var mapElem = _mapper.Map<Product>(element);
+            return await _repositProduct.Update(mapElem);
         }
     }
 }

@@ -11,6 +11,17 @@ namespace Infrastructure.Repositories
         public RepositSection()
         {
             _sections = new List<Section>();
+
+            _sections.Add(new Section()
+            {
+                Id = 1,
+                Name = "first"
+            });
+            _sections.Add(new Section()
+            {
+                Id = 2,
+                Name = "second"
+            });
         }
 
         private Section Find(int id)

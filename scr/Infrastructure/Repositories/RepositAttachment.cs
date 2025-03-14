@@ -1,7 +1,4 @@
 ﻿using Domain.Entities;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
@@ -11,6 +8,21 @@ namespace Infrastructure.Repositories
         public RepositAttachment()
         {
             _examples = new List<Attachment>();
+
+            _examples.Add(new Attachment()
+            {
+                Id = 1,
+                Message = "one",
+                PathPicture = "onepath",
+                IdProduct = 1,
+            });
+            _examples.Add(new Attachment()
+            {
+                Id = 2,
+                Message = "second",
+                PathPicture = "secondpath",
+                IdProduct = 3,
+            });
         }
 
         private Attachment Find(int id)

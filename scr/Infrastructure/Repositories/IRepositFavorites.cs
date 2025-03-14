@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
-    public interface IRepositUserProduct
+    public interface IRepositFavorites
     {
-        Task<UserProduct> ReadById(int idUser, int idProduct);
-        Task<List<UserProduct>> ReadAll();
-        Task Create(UserProduct element);
+        Task<Favorites> ReadById(int idUser, int idProduct);
+        Task<List<Favorites>> ReadAll();
+        Task Create(Favorites element);
         Task<bool> Delete(int idUser, int idProduct);
     }
 }

@@ -1,37 +1,45 @@
 ﻿using Application.Dto;
+using AutoMapper;
+using Domain.Entities;
 using Infrastructure.Repositories;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Application.Services
 {
     public class ServiceSection : IServiceSection
     {
         private IRepositSection _repositSection;
-        public ServiceSection(IRepositSection repositSection)
+        private IMapper _mapper;
+        public ServiceSection(IRepositSection repositSection, IMapper mapper)
         {
             _repositSection = repositSection;
+            _mapper = mapper;
         }
 
-        public Task Create(SectionDto element)
+        public async Task Create(SectionDto element)
         {
-            throw new System.NotImplementedException();
+            var mapElem = _mapper.Map<Section>(element);
+            if (mapElem != null) await _repositSection.Create(mapElem);
         }
-        public Task<bool> Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            throw new System.NotImplementedException();
+            return await _repositSection.Delete(id);
         }
-        public Task<List<SectionDto>> ReadAll()
+        public async Task<List<SectionDto>> ReadAll()
         {
-            throw new System.NotImplementedException();
+            var allElem = await _repositSection.ReadAll();
+            var mapAllElem = allElem.Select(q => _mapper.Map<SectionDto>(q)).ToList();
+            return mapAllElem;
         }
-        public Task<SectionDto> ReadById(int id)
+        public async Task<SectionDto> ReadById(int id)
         {
-            throw new System.NotImplementedException();
+            var element = await _repositSection.ReadById(id);
+            var mapElem = _mapper.Map<SectionDto>(element);
+            return mapElem;
         }
-        public Task<bool> Update(SectionDto element)
+        public async Task<bool> Update(SectionDto element)
         {
-            throw new System.NotImplementedException();
+            var mapElem = _mapper.Map<Section>(element);
+            return await _repositSection.Update(mapElem);
         }
     }
 }

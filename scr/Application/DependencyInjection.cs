@@ -14,7 +14,7 @@ namespace Application
             services.AddSingleton<IServiceReview, ServiceReview>();
             services.AddSingleton<IServiceSection, ServiceSection>();
             services.AddSingleton<IServiceUser, ServiceUser>();
-            services.AddSingleton<IServiceUserProduct, ServiceUserProduct>();
+            services.AddSingleton<IServiceFavorites, ServiceFavorites>();
 
             return services;
         }

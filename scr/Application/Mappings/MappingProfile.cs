@@ -13,7 +13,7 @@ namespace Application.Mappings
             CreateMap<Review, ReviewDto>().ReverseMap();
             CreateMap<Section, SectionDto>().ReverseMap();
             CreateMap<User, UserDto>().ReverseMap();
-            CreateMap<UserProduct, UserProductDto>().ReverseMap();
+            CreateMap<Favorites, FavoritesDto>().ReverseMap();
         }
     }
 }
