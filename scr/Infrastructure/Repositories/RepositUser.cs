@@ -29,14 +29,14 @@ namespace Infrastructure.Repositories
             });
         }
 
-        private User Find(int id)
+        private User? Find(int id)
         {
             return _users.FirstOrDefault(v => v.Id == id);
         }
-        public Task Create(User element)
+        public Task<int> Create(User element)
         {
             _users.Add(element);
-            return Task.CompletedTask;
+            return Task.FromResult(element.Id);
         }
         public Task<bool> Delete(int id)
         {
@@ -49,11 +49,12 @@ namespace Infrastructure.Repositories
             else
                 return Task.FromResult(false);
         }
-        public Task<List<User>> ReadAll()
+        public Task<IEnumerable<User>> ReadAll()
         {
-            return Task.FromResult(_users);
+            IEnumerable<User> users = _users;
+            return Task.FromResult(users);
         }
-        public Task<User> ReadById(int id)
+        public Task<User?> ReadById(int id)
         {
             var find = Find(id);
             return Task.FromResult(find);

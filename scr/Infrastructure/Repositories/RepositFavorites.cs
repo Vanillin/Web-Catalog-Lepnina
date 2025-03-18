@@ -24,14 +24,14 @@ namespace Infrastructure.Repositories
             });
         }
 
-        private Favorites Find(int idUser, int idProduct)
+        private Favorites? Find(int idUser, int idProduct)
         {
             return _userFavorites.FirstOrDefault(v => v.IdUser == idUser && v.IdProduct == idProduct);
         }
-        public Task Create(Favorites element)
+        public Task<(int,int)> Create(Favorites element)
         {
             _userFavorites.Add(element);
-            return Task.CompletedTask;
+            return Task.FromResult((element.IdUser, element.IdProduct));
         }
         public Task<bool> Delete(int idUser, int idProduct)
         {
@@ -43,11 +43,12 @@ namespace Infrastructure.Repositories
             }
             return Task.FromResult(false);
         }
-        public Task<List<Favorites>> ReadAll()
+        public Task<IEnumerable<Favorites>> ReadAll()
         {
-            return Task.FromResult(_userFavorites);
+            IEnumerable<Favorites> favorites = _userFavorites;
+            return Task.FromResult(favorites);
         }
-        public Task<Favorites> ReadById(int idUser, int idProduct)
+        public Task<Favorites?> ReadById(int idUser, int idProduct)
         {
             var find = Find(idUser, idProduct);
             return Task.FromResult(find);

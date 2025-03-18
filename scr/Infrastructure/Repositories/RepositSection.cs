@@ -24,14 +24,14 @@ namespace Infrastructure.Repositories
             });
         }
 
-        private Section Find(int id)
+        private Section? Find(int id)
         {
             return _sections.FirstOrDefault(v => v.Id == id);
         }
-        public Task Create(Section element)
+        public Task<int> Create(Section element)
         {
             _sections.Add(element);
-            return Task.CompletedTask;
+            return Task.FromResult(element.Id);
         }
         public Task<bool> Delete(int id)
         {
@@ -44,11 +44,12 @@ namespace Infrastructure.Repositories
             else
                 return Task.FromResult(false);
         }
-        public Task<List<Section>> ReadAll()
+        public Task<IEnumerable<Section>> ReadAll()
         {
-            return Task.FromResult(_sections);
+            IEnumerable<Section> sections = _sections;
+            return Task.FromResult(sections);
         }
-        public Task<Section> ReadById(int id)
+        public Task<Section?> ReadById(int id)
         {
             var find = Find(id);
             return Task.FromResult(find);

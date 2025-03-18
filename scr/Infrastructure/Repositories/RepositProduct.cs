@@ -47,14 +47,14 @@ namespace Infrastructure.Repositories
             });
         }
 
-        private Product Find(int id)
+        private Product? Find(int id)
         {
             return _products.FirstOrDefault(v => v.Id == id);
         }
-        public Task Create(Product element)
+        public Task<int> Create(Product element)
         {
             _products.Add(element);
-            return Task.CompletedTask;
+            return Task.FromResult(element.Id);
         }
         public Task<bool> Delete(int id)
         {
@@ -67,11 +67,12 @@ namespace Infrastructure.Repositories
             else
                 return Task.FromResult(false);
         }
-        public Task<List<Product>> ReadAll()
+        public Task<IEnumerable<Product>> ReadAll()
         {
-            return Task.FromResult(_products);
+            IEnumerable<Product> products = _products;
+            return Task.FromResult(products);
         }
-        public Task<Product> ReadById(int id)
+        public Task<Product?> ReadById(int id)
         {
             var find = Find(id);
             return Task.FromResult(find);

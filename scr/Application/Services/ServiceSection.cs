@@ -15,24 +15,28 @@ namespace Application.Services
             _mapper = mapper;
         }
 
-        public async Task Create(SectionDto element)
+        public async Task<int?> Create(SectionDto element)
         {
             var mapElem = _mapper.Map<Section>(element);
-            if (mapElem != null) await _repositSection.Create(mapElem);
+            if (mapElem == null) return null;
+            if (ReadById(element.Id) == null) return await _repositSection.Create(mapElem);
+            else return null;
         }
         public async Task<bool> Delete(int id)
         {
             return await _repositSection.Delete(id);
         }
-        public async Task<List<SectionDto>> ReadAll()
+        public async Task<IEnumerable<SectionDto>> ReadAll()
         {
             var allElem = await _repositSection.ReadAll();
             var mapAllElem = allElem.Select(q => _mapper.Map<SectionDto>(q)).ToList();
             return mapAllElem;
         }
-        public async Task<SectionDto> ReadById(int id)
+        public async Task<SectionDto?> ReadById(int id)
         {
             var element = await _repositSection.ReadById(id);
+            if (element == null) return null;
+
             var mapElem = _mapper.Map<SectionDto>(element);
             return mapElem;
         }

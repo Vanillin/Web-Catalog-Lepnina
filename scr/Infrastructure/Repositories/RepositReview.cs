@@ -30,14 +30,14 @@ namespace Infrastructure.Repositories
             });
         }
 
-        private Review Find(int id)
+        private Review? Find(int id)
         {
             return _reviews.FirstOrDefault(v => v.Id == id);
         }
-        public Task Create(Review element)
+        public Task<int> Create(Review element)
         {
             _reviews.Add(element);
-            return Task.CompletedTask;
+            return Task.FromResult(element.Id);
         }
         public Task<bool> Delete(int id)
         {
@@ -50,11 +50,12 @@ namespace Infrastructure.Repositories
             else
                 return Task.FromResult(false);
         }
-        public Task<List<Review>> ReadAll()
+        public Task<IEnumerable<Review>> ReadAll()
         {
-            return Task.FromResult(_reviews);
+            IEnumerable<Review> reviews = _reviews;
+            return Task.FromResult(reviews);
         }
-        public Task<Review> ReadById(int id)
+        public Task<Review?> ReadById(int id)
         {
             var find = Find(id);
             return Task.FromResult(find);

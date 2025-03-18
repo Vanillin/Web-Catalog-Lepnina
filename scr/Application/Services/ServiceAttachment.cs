@@ -1,4 +1,5 @@
-﻿using Application.Dto;
+﻿using System.Xml.Linq;
+using Application.Dto;
 using AutoMapper;
 using Domain.Entities;
 using Infrastructure.Repositories;
@@ -15,25 +16,29 @@ namespace Application.Services
             _mapper = mapper;
         }
 
-        public async Task Create(AttachmentDto element)
+        public async Task<int?> Create(AttachmentDto element)
         {
             var mapElem = _mapper.Map<Attachment>(element);
-            if (mapElem != null) await _repositExample.Create(mapElem);
+            if (mapElem == null) return null;
+            if (ReadById(element.Id) == null) return await _repositExample.Create(mapElem);
+            else return null;
         }
         public async Task<bool> Delete(int id)
         {
             return await _repositExample.Delete(id);
         }
-        public async Task<List<AttachmentDto>> ReadAll()
+        public async Task<IEnumerable<AttachmentDto>> ReadAll()
         {
             var allElem = await _repositExample.ReadAll();
             var mapAllElem = allElem.Select(q => _mapper.Map<AttachmentDto>(q)).ToList();
             return mapAllElem;
         }
-        public async Task<AttachmentDto> ReadById(int id)
+        public async Task<AttachmentDto?> ReadById(int id)
         {
-            var elem = await _repositExample.ReadById(id);
-            var mapElem = _mapper.Map<AttachmentDto>(elem);
+            var element = await _repositExample.ReadById(id);
+            if (element == null) return null;
+
+            var mapElem = _mapper.Map<AttachmentDto>(element);
             return mapElem;
         }
         public async Task<bool> Update(AttachmentDto element)

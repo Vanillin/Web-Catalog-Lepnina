@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using System.Collections;
+using Domain.Entities;
 
 namespace Infrastructure.Repositories
 {
@@ -25,14 +26,14 @@ namespace Infrastructure.Repositories
             });
         }
 
-        private Attachment Find(int id)
+        private Attachment? Find(int id)
         {
             return _examples.FirstOrDefault(v => v.Id == id);
         }
-        public Task Create(Attachment element)
+        public Task<int> Create(Attachment element)
         {
             _examples.Add(element);
-            return Task.CompletedTask;
+            return Task.FromResult(element.Id);
         }
         public Task<bool> Delete(int id)
         {
@@ -45,11 +46,12 @@ namespace Infrastructure.Repositories
             else
                 return Task.FromResult(false);
         }
-        public Task<List<Attachment>> ReadAll()
+        public Task<IEnumerable<Attachment>> ReadAll()
         {
-            return Task.FromResult(_examples);
+            IEnumerable<Attachment> retur = _examples;
+            return Task.FromResult(retur);
         }
-        public Task<Attachment> ReadById(int id)
+        public Task<Attachment?> ReadById(int id)
         {
             var find = Find(id);
             return Task.FromResult(find);

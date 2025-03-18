@@ -15,24 +15,28 @@ namespace Application.Services
             _mapper = mapper;
         }
 
-        public async Task Create(UserDto element)
+        public async Task<int?> Create(UserDto element)
         {
             var mapElem = _mapper.Map<User>(element);
-            if (mapElem != null) await _repositUser.Create(mapElem);
+            if (mapElem == null) return null;
+            if (ReadById(element.Id) == null) return await _repositUser.Create(mapElem);
+            else return null;
         }
         public async Task<bool> Delete(int id)
         {
             return await _repositUser.Delete(id);
         }
-        public async Task<List<UserDto>> ReadAll()
+        public async Task<IEnumerable<UserDto>> ReadAll()
         {
             var allElem = await _repositUser.ReadAll();
             var mapAllElem = allElem.Select(q => _mapper.Map<UserDto>(q)).ToList();
             return mapAllElem;
         }
-        public async Task<UserDto> ReadById(int id)
+        public async Task<UserDto?> ReadById(int id)
         {
             var element = await _repositUser.ReadById(id);
+            if (element == null) return null;
+
             var mapElem = _mapper.Map<UserDto>(element);
             return mapElem;
         }

@@ -15,24 +15,28 @@ namespace Application.Services
             _mapper = mapper;
         }
 
-        public async Task Create(FavoritesDto element)
+        public async Task<(int,int)?> Create(FavoritesDto element)
         {
             var mapElem = _mapper.Map<Favorites>(element);
-            if (mapElem != null) await _repositFavorites.Create(mapElem);
+            if (mapElem == null) return null;
+            if (ReadById(element.IdUser, element.IdProduct) == null) return await _repositFavorites.Create(mapElem);
+            else return null;
         }
         public async Task<bool> Delete(int idUser, int idProduct)
         {
             return await _repositFavorites.Delete(idUser, idProduct);
         }
-        public async Task<List<FavoritesDto>> ReadAll()
+        public async Task<IEnumerable<FavoritesDto>> ReadAll()
         {
             var allElem = await _repositFavorites.ReadAll();
             var mapAllElem = allElem.Select(q => _mapper.Map<FavoritesDto>(q)).ToList();
             return mapAllElem;
         }
-        public async Task<FavoritesDto> ReadById(int idUser, int idProduct)
+        public async Task<FavoritesDto?> ReadById(int idUser, int idProduct)
         {
             var element = await _repositFavorites.ReadById(idUser, idProduct);
+            if (element == null) return null;
+
             var mapElem = _mapper.Map<FavoritesDto>(element);
             return mapElem;
         }
