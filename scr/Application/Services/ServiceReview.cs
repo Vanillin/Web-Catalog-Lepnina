@@ -8,15 +8,28 @@ namespace Application.Services
     public class ServiceReview : IServiceReview
     {
         private IRepositReview _repositReview;
+        private IRepositUser _repositUser;
+        private IRepositProduct _repositProduct;
         private IMapper _mapper;
-        public ServiceReview(IRepositReview repositReview, IMapper mapper)
+        public ServiceReview(IRepositReview repositReview, IRepositUser repositUser, IRepositProduct repositProduct, IMapper mapper)
         {
             _repositReview = repositReview;
+            _repositUser = repositUser;
+            _repositProduct = repositProduct;
             _mapper = mapper;
         }
 
         public async Task<int?> Create(ReviewDto element)
         {
+            var user = _repositUser.ReadById(element.IdUser);
+            if (user == null) return null;
+
+            if (element.IdProduct != null)
+            {
+                var product = _repositProduct.ReadById((int)element.IdProduct);
+                if (product == null) return null;
+            }
+
             var mapElem = _mapper.Map<Review>(element);
             if (mapElem == null) return null;
             return await _repositReview.Create(mapElem); //id is changed later
@@ -42,6 +55,17 @@ namespace Application.Services
         public async Task<bool> Update(ReviewDto element)
         {
             var mapElem = _mapper.Map<Review>(element);
+            if (mapElem == null) return false;
+
+            var user = _repositUser.ReadById(mapElem.IdUser);
+            if (user == null) return false;
+
+            if (mapElem.IdProduct != null)
+            {
+                var product = _repositProduct.ReadById((int)mapElem.IdProduct);
+                if (product == null) return false;
+            }
+
             return await _repositReview.Update(mapElem);
         }
     }

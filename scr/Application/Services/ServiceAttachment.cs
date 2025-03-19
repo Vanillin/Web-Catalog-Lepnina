@@ -9,10 +9,12 @@ namespace Application.Services
     public class ServiceAttachment : IServiceAttachment
     {
         private IRepositAttachment _repositAttachment;
+        private IRepositProduct _repositProduct;
         private IMapper _mapper;
-        public ServiceAttachment(IRepositAttachment repositExample, IMapper mapper)
+        public ServiceAttachment(IRepositAttachment repositExample, IRepositProduct repositProduct, IMapper mapper)
         {
             _repositAttachment = repositExample;
+            _repositProduct = repositProduct;
             _mapper = mapper;
         }
 
@@ -20,6 +22,10 @@ namespace Application.Services
         {
             var mapElem = _mapper.Map<Attachment>(element);
             if (mapElem == null) return null;
+
+            var product = _repositProduct.ReadById(mapElem.IdProduct);
+            if (product == null) return null;
+
             return await _repositAttachment.Create(mapElem); //id is changed later
         }
         public async Task<bool> Delete(int id)
@@ -43,6 +49,11 @@ namespace Application.Services
         public async Task<bool> Update(AttachmentDto element)
         {
             var mapElem = _mapper.Map<Attachment>(element);
+            if (mapElem == null) return false;
+
+            var product = _repositProduct.ReadById(mapElem.IdProduct);
+            if (product == null) return false;
+
             return await _repositAttachment.Update(mapElem);
         }
     }

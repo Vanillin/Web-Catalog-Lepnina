@@ -8,10 +8,14 @@ namespace Application.Services
     public class ServiceUser : IServiceUser
     {
         private IRepositUser _repositUser;
+        private IRepositReview _repositReview;
+        private IRepositFavorites _repositFavorites;
         private IMapper _mapper;
-        public ServiceUser(IRepositUser repositUser, IMapper mapper)
+        public ServiceUser(IRepositUser repositUser, IRepositReview repositReview, IRepositFavorites repositFavorites, IMapper mapper)
         {
             _repositUser = repositUser;
+            _repositReview = repositReview;
+            _repositFavorites = repositFavorites;
             _mapper = mapper;
         }
 
@@ -21,9 +25,49 @@ namespace Application.Services
             if (mapElem == null) return null;
             return await _repositUser.Create(mapElem); //id is changed later
         }
-        public async Task<bool> Delete(int id)
+        public async Task<bool> Delete(int id) //must be transaction
         {
-            return await _repositUser.Delete(id);
+            UserDto? element = ReadById(id).Result;
+            if (element == null) return false;
+            List<Favorites> memoryFavor = new List<Favorites>();
+            List<Review> memoryReviews = new List<Review>();
+
+            try
+            {
+                var favorites = _repositFavorites.ReadAll().Result.Where(x => x.IdUser == id).ToList();
+                foreach (var v in favorites)
+                {
+                    var resultFavourite = _repositFavorites.Delete(v.IdUser, v.IdProduct);
+                    if (resultFavourite == null) throw new Exception();
+                    memoryFavor.Add(v);
+                }
+
+                var reviews = _repositReview.ReadAll().Result.Where(x => x.IdUser == id).ToList();
+                foreach (var v in reviews)
+                {
+                    var resultReview = _repositReview.Delete(v.Id).Result;
+                    if (!resultReview) throw new Exception();
+                    memoryReviews.Add(v);
+                }
+
+                var result = _repositUser.Delete(id).Result;
+                if (!result) throw new Exception();
+
+                return true;
+            }
+            catch (Exception)
+            {
+                foreach (var v in memoryFavor)
+                {
+                    await _repositFavorites.Create(v);
+                }
+                foreach (var v in memoryReviews)
+                {
+                    await _repositReview.Create(v);
+                }
+
+                return false;
+            }
         }
         public async Task<IEnumerable<UserDto>> ReadAll()
         {
@@ -42,6 +86,7 @@ namespace Application.Services
         public async Task<bool> Update(UserDto element)
         {
             var mapElem = _mapper.Map<User>(element);
+            if ( mapElem == null) return false;
             return await _repositUser.Update(mapElem);
         }
     }

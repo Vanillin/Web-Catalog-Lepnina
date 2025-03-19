@@ -8,10 +8,14 @@ namespace Application.Services
     public class ServiceFavorites : IServiceFavorites
     {
         private IRepositFavorites _repositFavorites;
+        private IRepositUser _repositUser;
+        private IRepositProduct _repositProduct;
         private IMapper _mapper;
-        public ServiceFavorites(IRepositFavorites repositUserProduct, IMapper mapper)
+        public ServiceFavorites(IRepositFavorites repositUserProduct, IRepositUser repositUser, IRepositProduct repositProduct, IMapper mapper)
         {
             _repositFavorites = repositUserProduct;
+            _repositUser = repositUser;
+            _repositProduct = repositProduct;
             _mapper = mapper;
         }
 
@@ -19,6 +23,13 @@ namespace Application.Services
         {
             var mapElem = _mapper.Map<Favorites>(element);
             if (mapElem == null) return null;
+
+            var user = _repositUser.ReadById(mapElem.IdUser);
+            if (user == null) return null;
+
+            var product = _repositProduct.ReadById(mapElem.IdProduct);
+            if (product == null) return null;
+
             if (ReadById(element.IdUser, element.IdProduct) == null) return await _repositFavorites.Create(mapElem);
             else return null;
         }

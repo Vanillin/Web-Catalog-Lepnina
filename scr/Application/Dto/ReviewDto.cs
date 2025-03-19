@@ -6,6 +6,6 @@
         public string Message { get; set; }
         public string PathPicture { get; set; }
         public int IdUser { get; set; }
-        public int IdProduct { get; set; }
+        public int? IdProduct { get; set; }
     }
 }
