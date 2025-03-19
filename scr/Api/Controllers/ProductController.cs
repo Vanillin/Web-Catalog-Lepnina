@@ -15,30 +15,32 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetByIdAsync([FromQuery] int id)
+    public async Task<IActionResult> GetByIdAsync(int id)
     {
-        var quiz = await _serviceProduct.ReadById(id);
-        return Ok(quiz);
+        var result = await _serviceProduct.ReadById(id);
+        if (result == null) return NotFound();
+        return Ok(result);
     }
 
     [HttpGet("all")]
     public async Task<IActionResult> GetAll()
     {
-        var quiz = await _serviceProduct.ReadAll();
-        return Ok(quiz);
+        var result = await _serviceProduct.ReadAll();
+        return Ok(result);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Add([FromBody] ProductDto quiz)
+    public async Task<IActionResult> Add([FromBody] ProductDto product)
     {
-        await _serviceProduct.Create(quiz);
-        return Created();
+        var result = await _serviceProduct.Create(product);
+        if (result == null) return BadRequest();
+        return Ok(result);
     }
 
     [HttpPut]
-    public async Task<IActionResult> Update([FromBody] ProductDto quiz)
+    public async Task<IActionResult> Update([FromBody] ProductDto product)
     {
-        var result = await _serviceProduct.Update(quiz);
+        var result = await _serviceProduct.Update(product);
         return Ok(result);
     }
 

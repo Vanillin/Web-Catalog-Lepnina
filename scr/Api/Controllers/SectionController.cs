@@ -15,30 +15,32 @@ public class SectionController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetByIdAsync([FromQuery] int id)
+    public async Task<IActionResult> GetByIdAsync(int id)
     {
-        var quiz = await _serviceSection.ReadById(id);
-        return Ok(quiz);
+        var result = await _serviceSection.ReadById(id);
+        if (result == null) return NotFound();
+        return Ok(result);
     }
 
     [HttpGet("all")]
     public async Task<IActionResult> GetAll()
     {
-        var quiz = await _serviceSection.ReadAll();
-        return Ok(quiz);
+        var result = await _serviceSection.ReadAll();
+        return Ok(result);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Add([FromBody] SectionDto quiz)
+    public async Task<IActionResult> Add([FromBody] SectionDto section)
     {
-        await _serviceSection.Create(quiz);
-        return Created();
+        var result = await _serviceSection.Create(section);
+        if (result == null) return BadRequest();
+        return Ok(result);
     }
 
     [HttpPut]
-    public async Task<IActionResult> Update([FromBody] SectionDto quiz)
+    public async Task<IActionResult> Update([FromBody] SectionDto section)
     {
-        var result = await _serviceSection.Update(quiz);
+        var result = await _serviceSection.Update(section);
         return Ok(result);
     }
 

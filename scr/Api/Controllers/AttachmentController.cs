@@ -15,30 +15,32 @@ public class AttachmentController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetByIdAsync([FromQuery] int id)
+    public async Task<IActionResult> GetByIdAsync(int id)
     {
-        var quiz = await _serviceAttachment.ReadById(id);
-        return Ok(quiz);
+        var result = await _serviceAttachment.ReadById(id);
+        if (result == null) return NotFound();
+        return Ok(result);
     }
 
     [HttpGet("all")]
     public async Task<IActionResult> GetAll()
     {
-        var quiz = await _serviceAttachment.ReadAll();
-        return Ok(quiz);
+        var result = await _serviceAttachment.ReadAll();
+        return Ok(result);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Add([FromBody] AttachmentDto quiz)
+    public async Task<IActionResult> Add([FromBody] AttachmentDto attachment)
     {
-        await _serviceAttachment.Create(quiz);
-        return Created();
+        var result = await _serviceAttachment.Create(attachment);
+        if (result == null) return BadRequest();
+        return Ok(result);
     }
 
     [HttpPut]
-    public async Task<IActionResult> Update([FromBody] AttachmentDto quiz)
+    public async Task<IActionResult> Update([FromBody] AttachmentDto attachment)
     {
-        var result = await _serviceAttachment.Update(quiz);
+        var result = await _serviceAttachment.Update(attachment);
         return Ok(result);
     }
 

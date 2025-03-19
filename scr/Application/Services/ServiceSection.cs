@@ -19,8 +19,7 @@ namespace Application.Services
         {
             var mapElem = _mapper.Map<Section>(element);
             if (mapElem == null) return null;
-            if (ReadById(element.Id) == null) return await _repositSection.Create(mapElem);
-            else return null;
+            return await _repositSection.Create(mapElem); //id is changed later
         }
         public async Task<bool> Delete(int id)
         {

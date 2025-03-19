@@ -15,30 +15,32 @@ public class ReviewController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetByIdAsync([FromQuery] int id)
+    public async Task<IActionResult> GetByIdAsync(int id)
     {
-        var quiz = await _serviceReview.ReadById(id);
-        return Ok(quiz);
+        var result = await _serviceReview.ReadById(id);
+        if (result == null) return NotFound();
+        return Ok(result);
     }
 
     [HttpGet("all")]
     public async Task<IActionResult> GetAll()
     {
-        var quiz = await _serviceReview.ReadAll();
-        return Ok(quiz);
+        var result = await _serviceReview.ReadAll();
+        return Ok(result);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Add([FromBody] ReviewDto quiz)
+    public async Task<IActionResult> Add([FromBody] ReviewDto review)
     {
-        await _serviceReview.Create(quiz);
-        return Created();
+        var result = await _serviceReview.Create(review);
+        if (result == null) return BadRequest();
+        return Ok(result);
     }
 
     [HttpPut]
-    public async Task<IActionResult> Update([FromBody] ReviewDto quiz)
+    public async Task<IActionResult> Update([FromBody] ReviewDto review)
     {
-        var result = await _serviceReview.Update(quiz);
+        var result = await _serviceReview.Update(review);
         return Ok(result);
     }
 

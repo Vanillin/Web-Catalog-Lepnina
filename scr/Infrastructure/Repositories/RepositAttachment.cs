@@ -1,23 +1,24 @@
 ﻿using System.Collections;
+using System.ComponentModel.DataAnnotations;
 using Domain.Entities;
 
 namespace Infrastructure.Repositories
 {
     public class RepositAttachment : IRepositAttachment
     {
-        private List<Attachment> _examples;
+        private List<Attachment> _attachments;
         public RepositAttachment()
         {
-            _examples = new List<Attachment>();
+            _attachments = new List<Attachment>();
 
-            _examples.Add(new Attachment()
+            _attachments.Add(new Attachment()
             {
                 Id = 1,
                 Message = "one",
                 PathPicture = "onepath",
                 IdProduct = 1,
             });
-            _examples.Add(new Attachment()
+            _attachments.Add(new Attachment()
             {
                 Id = 2,
                 Message = "second",
@@ -28,11 +29,20 @@ namespace Infrastructure.Repositories
 
         private Attachment? Find(int id)
         {
-            return _examples.FirstOrDefault(v => v.Id == id);
+            return _attachments.FirstOrDefault(v => v.Id == id);
+        }
+        private int FindMaxId()
+        {
+            int max = 0;
+            foreach (var v in  _attachments) 
+                if (v.Id > max)
+                    max = v.Id;
+            return max;
         }
         public Task<int> Create(Attachment element)
         {
-            _examples.Add(element);
+            element.Id = FindMaxId() + 1;
+            _attachments.Add(element);
             return Task.FromResult(element.Id);
         }
         public Task<bool> Delete(int id)
@@ -40,7 +50,7 @@ namespace Infrastructure.Repositories
             var find = Find(id);
             if (find != null)
             {
-                _examples.Remove(find);
+                _attachments.Remove(find);
                 return Task.FromResult(true);
             }
             else
@@ -48,7 +58,7 @@ namespace Infrastructure.Repositories
         }
         public Task<IEnumerable<Attachment>> ReadAll()
         {
-            IEnumerable<Attachment> retur = _examples;
+            IEnumerable<Attachment> retur = _attachments;
             return Task.FromResult(retur);
         }
         public Task<Attachment?> ReadById(int id)

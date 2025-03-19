@@ -15,30 +15,32 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetByIdAsync([FromQuery] int id)
+    public async Task<IActionResult> GetByIdAsync(int id)
     {
-        var quiz = await _serviceUser.ReadById(id);
-        return Ok(quiz);
+        var result = await _serviceUser.ReadById(id);
+        if (result == null) return NotFound();
+        return Ok(result);
     }
 
     [HttpGet("all")]
     public async Task<IActionResult> GetAll()
     {
-        var quiz = await _serviceUser.ReadAll();
-        return Ok(quiz);
+        var result = await _serviceUser.ReadAll();
+        return Ok(result);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Add([FromBody] UserDto quiz)
+    public async Task<IActionResult> Add([FromBody] UserDto user)
     {
-        await _serviceUser.Create(quiz);
-        return Created();
+        var result = await _serviceUser.Create(user);
+        if (result == null) return BadRequest();
+        return Ok(result);
     }
 
     [HttpPut]
-    public async Task<IActionResult> Update([FromBody] UserDto quiz)
+    public async Task<IActionResult> Update([FromBody] UserDto user)
     {
-        var result = await _serviceUser.Update(quiz);
+        var result = await _serviceUser.Update(user);
         return Ok(result);
     }
 

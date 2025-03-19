@@ -19,8 +19,7 @@ namespace Application.Services
         {
             var mapElem = _mapper.Map<User>(element);
             if (mapElem == null) return null;
-            if (ReadById(element.Id) == null) return await _repositUser.Create(mapElem);
-            else return null;
+            return await _repositUser.Create(mapElem); //id is changed later
         }
         public async Task<bool> Delete(int id)
         {

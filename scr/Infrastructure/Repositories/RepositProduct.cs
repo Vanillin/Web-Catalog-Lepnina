@@ -1,6 +1,7 @@
 ﻿using Domain.Entities;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
@@ -51,8 +52,17 @@ namespace Infrastructure.Repositories
         {
             return _products.FirstOrDefault(v => v.Id == id);
         }
+        private int FindMaxId()
+        {
+            int max = 0;
+            foreach (var v in _products)
+                if (v.Id > max)
+                    max = v.Id;
+            return max;
+        }
         public Task<int> Create(Product element)
         {
+            element.Id = FindMaxId() + 1;
             _products.Add(element);
             return Task.FromResult(element.Id);
         }

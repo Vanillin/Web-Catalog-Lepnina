@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using System.Net.Mail;
 
 namespace Infrastructure.Repositories
 {
@@ -33,8 +34,17 @@ namespace Infrastructure.Repositories
         {
             return _users.FirstOrDefault(v => v.Id == id);
         }
+        private int FindMaxId()
+        {
+            int max = 0;
+            foreach (var v in _users)
+                if (v.Id > max)
+                    max = v.Id;
+            return max;
+        }
         public Task<int> Create(User element)
         {
+            element.Id = FindMaxId() +1;
             _users.Add(element);
             return Task.FromResult(element.Id);
         }

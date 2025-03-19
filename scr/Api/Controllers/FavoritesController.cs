@@ -14,31 +14,33 @@ public class FavoritesController : ControllerBase
         _serviceFavorites = serviceFavorites;
     }
 
-    [HttpGet("{idU} {idP}")]
-    public async Task<IActionResult> GetByIdAsync([FromQuery] int idU, [FromQuery] int idP)
+    [HttpGet("{idUser}/{idProduct}")]
+    public async Task<IActionResult> GetByIdAsync(int idUser, int idProduct)
     {
-        var quiz = await _serviceFavorites.ReadById(idU, idP);
-        return Ok(quiz);
+        var result = await _serviceFavorites.ReadById(idUser, idProduct);
+        if (result == null) return NotFound();
+        return Ok(result);
     }
 
     [HttpGet("all")]
     public async Task<IActionResult> GetAll()
     {
-        var quiz = await _serviceFavorites.ReadAll();
-        return Ok(quiz);
+        var result = await _serviceFavorites.ReadAll();
+        return Ok(result);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Add([FromBody] FavoritesDto quiz)
+    public async Task<IActionResult> Add([FromBody] FavoritesDto favorites)
     {
-        await _serviceFavorites.Create(quiz);
-        return Created();
+        var result = await _serviceFavorites.Create(favorites);
+        if (result == null) return BadRequest();
+        return Ok(result);
     }
 
-    [HttpDelete("{idU} {idP}")]
-    public async Task<IActionResult> Delete([FromQuery] int idU, [FromQuery] int idP)
+    [HttpDelete("{idUser}/{idProduct}")]
+    public async Task<IActionResult> Delete(int idUser, int idProduct)
     {
-        var result = await _serviceFavorites.Delete(idU, idP);
+        var result = await _serviceFavorites.Delete(idUser, idProduct);
         return Ok(result);
     }
 }
