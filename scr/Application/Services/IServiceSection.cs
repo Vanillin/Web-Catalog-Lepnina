@@ -6,9 +6,9 @@ namespace Application.Services
 {
     public interface IServiceSection
     {
-        Task<SectionDto> ReadById(int id);
-        Task<List<SectionDto>> ReadAll();
-        Task Create(SectionDto element);
+        Task<SectionDto?> ReadById(int id);
+        Task<IEnumerable<SectionDto>> ReadAll();
+        Task<int?> Create(SectionDto element);
         Task<bool> Update(SectionDto element);
         Task<bool> Delete(int id);
     }

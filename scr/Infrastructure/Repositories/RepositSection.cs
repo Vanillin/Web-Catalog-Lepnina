@@ -1,6 +1,7 @@
 ﻿using Domain.Entities;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
@@ -11,16 +12,36 @@ namespace Infrastructure.Repositories
         public RepositSection()
         {
             _sections = new List<Section>();
+
+            _sections.Add(new Section()
+            {
+                Id = 1,
+                Name = "first"
+            });
+            _sections.Add(new Section()
+            {
+                Id = 2,
+                Name = "second"
+            });
         }
 
-        private Section Find(int id)
+        private Section? Find(int id)
         {
             return _sections.FirstOrDefault(v => v.Id == id);
         }
-        public Task Create(Section element)
+        private int FindMaxId()
         {
+            int max = 0;
+            foreach (var v in _sections)
+                if (v.Id > max)
+                    max = v.Id;
+            return max;
+        }
+        public Task<int> Create(Section element)
+        {
+            element.Id = FindMaxId() +1;
             _sections.Add(element);
-            return Task.CompletedTask;
+            return Task.FromResult(element.Id);
         }
         public Task<bool> Delete(int id)
         {
@@ -33,11 +54,12 @@ namespace Infrastructure.Repositories
             else
                 return Task.FromResult(false);
         }
-        public Task<List<Section>> ReadAll()
+        public Task<IEnumerable<Section>> ReadAll()
         {
-            return Task.FromResult(_sections);
+            IEnumerable<Section> sections = _sections;
+            return Task.FromResult(sections);
         }
-        public Task<Section> ReadById(int id)
+        public Task<Section?> ReadById(int id)
         {
             var find = Find(id);
             return Task.FromResult(find);

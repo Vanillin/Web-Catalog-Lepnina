@@ -2,13 +2,13 @@
 {
     public class ProductDto
     {
-        public int Id;
-        public double Length;
-        public double Height;
-        public double Width;
-        public double Priсe;
-        public double Discount;
-        public string PathPicture;
-        public int IdSection;
+        public int Id { get; set; }
+        public double Length { get; set; }
+        public double Height { get; set; }
+        public double Width { get; set; }
+        public double Priсe { get; set; }
+        public double Discount { get; set; }
+        public string PathPicture { get; set; }
+        public int IdSection { get; set; }
     }
 }

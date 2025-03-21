@@ -1,37 +1,72 @@
 ﻿using Application.Dto;
+using AutoMapper;
+using Domain.Entities;
 using Infrastructure.Repositories;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Application.Services
 {
     public class ServiceReview : IServiceReview
     {
         private IRepositReview _repositReview;
-        public ServiceReview(IRepositReview repositReview)
+        private IRepositUser _repositUser;
+        private IRepositProduct _repositProduct;
+        private IMapper _mapper;
+        public ServiceReview(IRepositReview repositReview, IRepositUser repositUser, IRepositProduct repositProduct, IMapper mapper)
         {
             _repositReview = repositReview;
+            _repositUser = repositUser;
+            _repositProduct = repositProduct;
+            _mapper = mapper;
         }
 
-        public Task Create(ReviewDto element)
+        public async Task<int?> Create(ReviewDto element)
         {
-            throw new System.NotImplementedException();
+            var user = _repositUser.ReadById(element.IdUser);
+            if (user == null) return null;
+
+            if (element.IdProduct != null)
+            {
+                var product = _repositProduct.ReadById((int)element.IdProduct);
+                if (product == null) return null;
+            }
+
+            var mapElem = _mapper.Map<Review>(element);
+            if (mapElem == null) return null;
+            return await _repositReview.Create(mapElem); //id is changed later
         }
-        public Task<bool> Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            throw new System.NotImplementedException();
+            return await _repositReview.Delete(id);
         }
-        public Task<List<ReviewDto>> ReadAll()
+        public async Task<IEnumerable<ReviewDto>> ReadAll()
         {
-            throw new System.NotImplementedException();
-        }        
-        public Task<ReviewDto> ReadById(int id)
-        {
-            throw new System.NotImplementedException();
+            var allElem = await _repositReview.ReadAll();
+            var mapAllElem = allElem.Select(q => _mapper.Map<ReviewDto>(q)).ToList();
+            return mapAllElem;
         }
-        public Task<bool> Update(ReviewDto element)
+        public async Task<ReviewDto?> ReadById(int id)
         {
-            throw new System.NotImplementedException();
+            var element = await _repositReview.ReadById(id);
+            if (element == null) return null;
+
+            var mapElem = _mapper.Map<ReviewDto>(element);
+            return mapElem;
+        }
+        public async Task<bool> Update(ReviewDto element)
+        {
+            var mapElem = _mapper.Map<Review>(element);
+            if (mapElem == null) return false;
+
+            var user = _repositUser.ReadById(mapElem.IdUser);
+            if (user == null) return false;
+
+            if (mapElem.IdProduct != null)
+            {
+                var product = _repositProduct.ReadById((int)mapElem.IdProduct);
+                if (product == null) return false;
+            }
+
+            return await _repositReview.Update(mapElem);
         }
     }
 }

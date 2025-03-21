@@ -1,37 +1,78 @@
 ﻿using Application.Dto;
+using AutoMapper;
+using Domain.Entities;
 using Infrastructure.Repositories;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Application.Services
 {
     public class ServiceSection : IServiceSection
     {
         private IRepositSection _repositSection;
-        public ServiceSection(IRepositSection repositSection)
+        private IRepositProduct _repositProduct;
+        private IMapper _mapper;
+        public ServiceSection(IRepositSection repositSection, IRepositProduct repositProduct, IMapper mapper)
         {
             _repositSection = repositSection;
+            _repositProduct = repositProduct;
+            _mapper = mapper;
         }
 
-        public Task Create(SectionDto element)
+        public async Task<int?> Create(SectionDto element)
         {
-            throw new System.NotImplementedException();
+            var mapElem = _mapper.Map<Section>(element);
+            if (mapElem == null) return null;
+            return await _repositSection.Create(mapElem); //id is changed later
         }
-        public Task<bool> Delete(int id)
+        public async Task<bool> Delete(int id) //must be transaction
         {
-            throw new System.NotImplementedException();
+            SectionDto? element = ReadById(id).Result;
+            if (element == null) return false;
+            List<Product> memoryProduct = new List<Product>();
+
+            try
+            {
+                var products = _repositProduct.ReadAll().Result.Where(x => x.IdSection == id).ToList();
+                foreach (var v in products)
+                {
+                    var resultProduct = _repositProduct.Delete(v.Id);
+                    if (resultProduct == null) throw new Exception();
+                    memoryProduct.Add(v);
+                }
+
+                var result = _repositSection.Delete(id).Result;
+                if (!result) throw new Exception();
+
+                return true;
+            }
+            catch (Exception)
+            {
+                foreach (var v in memoryProduct)
+                {
+                    await _repositProduct.Create(v);
+                }
+
+                return false;
+            }
         }
-        public Task<List<SectionDto>> ReadAll()
+        public async Task<IEnumerable<SectionDto>> ReadAll()
         {
-            throw new System.NotImplementedException();
+            var allElem = await _repositSection.ReadAll();
+            var mapAllElem = allElem.Select(q => _mapper.Map<SectionDto>(q)).ToList();
+            return mapAllElem;
         }
-        public Task<SectionDto> ReadById(int id)
+        public async Task<SectionDto?> ReadById(int id)
         {
-            throw new System.NotImplementedException();
+            var element = await _repositSection.ReadById(id);
+            if (element == null) return null;
+
+            var mapElem = _mapper.Map<SectionDto>(element);
+            return mapElem;
         }
-        public Task<bool> Update(SectionDto element)
+        public async Task<bool> Update(SectionDto element)
         {
-            throw new System.NotImplementedException();
+            var mapElem = _mapper.Map<Section>(element);
+            if ( mapElem == null) return false;
+            return await _repositSection.Update(mapElem);
         }
     }
 }

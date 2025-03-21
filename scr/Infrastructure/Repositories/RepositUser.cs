@@ -1,7 +1,5 @@
 ﻿using Domain.Entities;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Net.Mail;
 
 namespace Infrastructure.Repositories
 {
@@ -11,16 +9,44 @@ namespace Infrastructure.Repositories
         public RepositUser()
         {
             _users = new List<User>();
+
+            _users.Add(new User()
+            {
+                Id = 1,
+                Name = "firstuser",
+                PathIcon = "firstusericon"
+            });
+            _users.Add(new User()
+            {
+                Id = 2,
+                Name = "seconduser",
+                PathIcon = "secondusericon"
+            });
+            _users.Add(new User()
+            {
+                Id = 3,
+                Name = "thirduser",
+                PathIcon = "thirdusericon"
+            });
         }
 
-        private User Find(int id)
+        private User? Find(int id)
         {
             return _users.FirstOrDefault(v => v.Id == id);
         }
-        public Task Create(User element)
+        private int FindMaxId()
         {
+            int max = 0;
+            foreach (var v in _users)
+                if (v.Id > max)
+                    max = v.Id;
+            return max;
+        }
+        public Task<int> Create(User element)
+        {
+            element.Id = FindMaxId() +1;
             _users.Add(element);
-            return Task.CompletedTask;
+            return Task.FromResult(element.Id);
         }
         public Task<bool> Delete(int id)
         {
@@ -33,11 +59,12 @@ namespace Infrastructure.Repositories
             else
                 return Task.FromResult(false);
         }
-        public Task<List<User>> ReadAll()
+        public Task<IEnumerable<User>> ReadAll()
         {
-            return Task.FromResult(_users);
+            IEnumerable<User> users = _users;
+            return Task.FromResult(users);
         }
-        public Task<User> ReadById(int id)
+        public Task<User?> ReadById(int id)
         {
             var find = Find(id);
             return Task.FromResult(find);

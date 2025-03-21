@@ -1,37 +1,60 @@
-﻿using Application.Dto;
+﻿using System.Xml.Linq;
+using Application.Dto;
+using AutoMapper;
+using Domain.Entities;
 using Infrastructure.Repositories;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Application.Services
 {
     public class ServiceAttachment : IServiceAttachment
     {
-        private IRepositAttachment _repositExample;
-        public ServiceAttachment(IRepositAttachment repositExample)
+        private IRepositAttachment _repositAttachment;
+        private IRepositProduct _repositProduct;
+        private IMapper _mapper;
+        public ServiceAttachment(IRepositAttachment repositExample, IRepositProduct repositProduct, IMapper mapper)
         {
-            _repositExample = repositExample;
+            _repositAttachment = repositExample;
+            _repositProduct = repositProduct;
+            _mapper = mapper;
         }
 
-        public Task Create(AttachmentDto element)
+        public async Task<int?> Create(AttachmentDto element)
         {
-            throw new System.NotImplementedException();
+            var mapElem = _mapper.Map<Attachment>(element);
+            if (mapElem == null) return null;
+
+            var product = _repositProduct.ReadById(mapElem.IdProduct);
+            if (product == null) return null;
+
+            return await _repositAttachment.Create(mapElem); //id is changed later
         }
-        public Task<bool> Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            throw new System.NotImplementedException();
+            return await _repositAttachment.Delete(id);
         }
-        public Task<List<AttachmentDto>> ReadAll()
+        public async Task<IEnumerable<AttachmentDto>> ReadAll()
         {
-            throw new System.NotImplementedException();
+            var allElem = await _repositAttachment.ReadAll();
+            var mapAllElem = allElem.Select(q => _mapper.Map<AttachmentDto>(q)).ToList();
+            return mapAllElem;
         }
-        public Task<AttachmentDto> ReadById(int id)
+        public async Task<AttachmentDto?> ReadById(int id)
         {
-            throw new System.NotImplementedException();
+            var element = await _repositAttachment.ReadById(id);
+            if (element == null) return null;
+
+            var mapElem = _mapper.Map<AttachmentDto>(element);
+            return mapElem;
         }
-        public Task<bool> Update(AttachmentDto element)
+        public async Task<bool> Update(AttachmentDto element)
         {
-            throw new System.NotImplementedException();
+            var mapElem = _mapper.Map<Attachment>(element);
+            if (mapElem == null) return false;
+
+            var product = _repositProduct.ReadById(mapElem.IdProduct);
+            if (product == null) return false;
+
+            return await _repositAttachment.Update(mapElem);
         }
     }
 }
