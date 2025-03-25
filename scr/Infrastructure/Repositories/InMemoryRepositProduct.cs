@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
-    public class RepositProduct : IRepositProduct
+    public class InMemoryRepositProduct : IRepositProduct
     {
         private List<Product> _products;
-        public RepositProduct()
+        public InMemoryRepositProduct()
         {
             _products = new List<Product>();
 

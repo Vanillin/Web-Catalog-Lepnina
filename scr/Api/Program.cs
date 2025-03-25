@@ -1,5 +1,6 @@
 using Application;
 using Infrastructure;
+using Infrastructure.DataBase;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,10 +11,16 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
+builder.Services.AddApplication();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var migrationRunner = scope.ServiceProvider.GetRequiredService<MigrationRunner>();
+    migrationRunner.Run();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -24,13 +24,13 @@ namespace Application.Services
             var mapElem = _mapper.Map<Favorites>(element);
             if (mapElem == null) return null;
 
-            var user = _repositUser.ReadById(mapElem.IdUser);
+            var user = _repositUser.ReadById(mapElem.IdUser).Result;
             if (user == null) return null;
 
-            var product = _repositProduct.ReadById(mapElem.IdProduct);
+            var product = _repositProduct.ReadById(mapElem.IdProduct).Result;
             if (product == null) return null;
 
-            if (ReadById(element.IdUser, element.IdProduct) == null) return await _repositFavorites.Create(mapElem);
+            if (ReadById(element.IdUser, element.IdProduct).Result == null) return await _repositFavorites.Create(mapElem);
             else return null;
         }
         public async Task<bool> Delete(int idUser, int idProduct)

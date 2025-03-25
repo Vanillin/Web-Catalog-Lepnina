@@ -21,12 +21,12 @@ namespace Application.Services
 
         public async Task<int?> Create(ReviewDto element)
         {
-            var user = _repositUser.ReadById(element.IdUser);
+            var user = _repositUser.ReadById(element.IdUser).Result;
             if (user == null) return null;
 
             if (element.IdProduct != null)
             {
-                var product = _repositProduct.ReadById((int)element.IdProduct);
+                var product = _repositProduct.ReadById((int)element.IdProduct).Result;
                 if (product == null) return null;
             }
 
@@ -57,12 +57,12 @@ namespace Application.Services
             var mapElem = _mapper.Map<Review>(element);
             if (mapElem == null) return false;
 
-            var user = _repositUser.ReadById(mapElem.IdUser);
+            var user = _repositUser.ReadById(mapElem.IdUser).Result;
             if (user == null) return false;
 
             if (mapElem.IdProduct != null)
             {
-                var product = _repositProduct.ReadById((int)mapElem.IdProduct);
+                var product = _repositProduct.ReadById((int)mapElem.IdProduct).Result;
                 if (product == null) return false;
             }
 

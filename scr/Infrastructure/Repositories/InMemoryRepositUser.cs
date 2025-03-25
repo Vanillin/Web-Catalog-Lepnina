@@ -1,46 +1,51 @@
 ﻿using Domain.Entities;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Mail;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
-    public class RepositSection : IRepositSection
+    public class InMemoryRepositUser : IRepositUser
     {
-        private List<Section> _sections;
-        public RepositSection()
+        private List<User> _users;
+        public InMemoryRepositUser()
         {
-            _sections = new List<Section>();
+            _users = new List<User>();
 
-            _sections.Add(new Section()
+            _users.Add(new User()
             {
                 Id = 1,
-                Name = "first"
+                Name = "firstuser",
+                PathIcon = "firstusericon"
             });
-            _sections.Add(new Section()
+            _users.Add(new User()
             {
                 Id = 2,
-                Name = "second"
+                Name = "seconduser",
+                PathIcon = "secondusericon"
+            });
+            _users.Add(new User()
+            {
+                Id = 3,
+                Name = "thirduser",
+                PathIcon = "thirdusericon"
             });
         }
 
-        private Section? Find(int id)
+        private User? Find(int id)
         {
-            return _sections.FirstOrDefault(v => v.Id == id);
+            return _users.FirstOrDefault(v => v.Id == id);
         }
         private int FindMaxId()
         {
             int max = 0;
-            foreach (var v in _sections)
+            foreach (var v in _users)
                 if (v.Id > max)
                     max = v.Id;
             return max;
         }
-        public Task<int> Create(Section element)
+        public Task<int> Create(User element)
         {
             element.Id = FindMaxId() +1;
-            _sections.Add(element);
+            _users.Add(element);
             return Task.FromResult(element.Id);
         }
         public Task<bool> Delete(int id)
@@ -48,28 +53,29 @@ namespace Infrastructure.Repositories
             var find = Find(id);
             if (find != null)
             {
-                _sections.Remove(find);
+                _users.Remove(find);
                 return Task.FromResult(true);
             }
             else
                 return Task.FromResult(false);
         }
-        public Task<IEnumerable<Section>> ReadAll()
+        public Task<IEnumerable<User>> ReadAll()
         {
-            IEnumerable<Section> sections = _sections;
-            return Task.FromResult(sections);
+            IEnumerable<User> users = _users;
+            return Task.FromResult(users);
         }
-        public Task<Section?> ReadById(int id)
+        public Task<User?> ReadById(int id)
         {
             var find = Find(id);
             return Task.FromResult(find);
         }
-        public Task<bool> Update(Section element)
+        public Task<bool> Update(User element)
         {
             var find = Find(element.Id);
             if (find != null)
             {
                 find.Name = element.Name;
+                find.PathIcon = element.PathIcon;
                 return Task.FromResult(true);
             }
             return Task.FromResult(false);

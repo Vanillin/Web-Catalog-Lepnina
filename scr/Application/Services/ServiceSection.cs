@@ -34,8 +34,8 @@ namespace Application.Services
                 var products = _repositProduct.ReadAll().Result.Where(x => x.IdSection == id).ToList();
                 foreach (var v in products)
                 {
-                    var resultProduct = _repositProduct.Delete(v.Id);
-                    if (resultProduct == null) throw new Exception();
+                    var resultProduct = _repositProduct.Delete(v.Id).Result;
+                    if (!resultProduct) throw new Exception();
                     memoryProduct.Add(v);
                 }
 

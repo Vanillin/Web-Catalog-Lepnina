@@ -37,8 +37,8 @@ namespace Application.Services
                 var favorites = _repositFavorites.ReadAll().Result.Where(x => x.IdUser == id).ToList();
                 foreach (var v in favorites)
                 {
-                    var resultFavourite = _repositFavorites.Delete(v.IdUser, v.IdProduct);
-                    if (resultFavourite == null) throw new Exception();
+                    var resultFavourite = _repositFavorites.Delete(v.IdUser, v.IdProduct).Result;
+                    if (!resultFavourite) throw new Exception();
                     memoryFavor.Add(v);
                 }
 

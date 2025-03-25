@@ -26,7 +26,7 @@ namespace Application.Services
 
         public async Task<int?> Create(ProductDto element)
         {
-            var section = _repositSection.ReadById(element.IdSection);
+            var section = _repositSection.ReadById(element.IdSection).Result;
             if (section == null) return null;
 
             var mapElem = _mapper.Map<Product>(element);
@@ -46,8 +46,8 @@ namespace Application.Services
                 var favorites = _repositFavorites.ReadAll().Result.Where(x => x.IdProduct == id).ToList();
                 foreach (var v in favorites)
                 {
-                    var resultFavourite = _repositFavorites.Delete(v.IdUser, v.IdProduct);
-                    if (resultFavourite == null) throw new Exception();
+                    var resultFavourite = _repositFavorites.Delete(v.IdUser, v.IdProduct).Result;
+                    if (!resultFavourite) throw new Exception();
                     memoryFavor.Add(v);
                 }
 
@@ -62,8 +62,8 @@ namespace Application.Services
                 var attachments = _repositAttachment.ReadAll().Result.Where(x => x.IdProduct == id).ToList();
                 foreach (var v in attachments)
                 {
-                    var resultAttach = _repositAttachment.Delete(v.Id);
-                    if (resultAttach == null) throw new Exception();
+                    var resultAttach = _repositAttachment.Delete(v.Id).Result;
+                    if (!resultAttach) throw new Exception();
                     memoryAttach.Add(v);
                 }
 
@@ -109,7 +109,7 @@ namespace Application.Services
             var mapElem = _mapper.Map<Product>(element);
             if (mapElem == null) return false;
 
-            var section = _repositSection.ReadById(mapElem.IdSection);
+            var section = _repositSection.ReadById(mapElem.IdSection).Result;
             if (section == null) return false;
 
             return await _repositProduct.Update(mapElem);
