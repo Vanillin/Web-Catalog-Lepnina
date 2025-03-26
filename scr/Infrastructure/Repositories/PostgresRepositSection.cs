@@ -13,23 +13,23 @@ namespace Infrastructure.Repositories
         }
         public async Task<int> Create(Section section)
         {
-            int sectionid;
+            int sectionId;
             try
             {
                 await _connection.OpenAsync();
 
-                sectionid = await _connection.QuerySingleAsync<int>(@"
+                sectionId = await _connection.QuerySingleAsync<int>(@"
                 INSERT INTO sections (name)
                 VALUES (@Name)
                 RETURNING id"
-                , new { section.Name });
+                , section);
             }
             finally
             {
                 await _connection.CloseAsync();
             }
 
-            return sectionid;
+            return sectionId;
         }
         public async Task<bool> Delete(int id)
         {
@@ -39,7 +39,7 @@ namespace Infrastructure.Repositories
                 await _connection.OpenAsync();
 
                 affectedRows = await _connection.ExecuteAsync(@"
-                DELETE FROM sections WHERE @Id = id
+                DELETE FROM sections WHERE id = @Id
                 "
                 , new { Id = id });
             }

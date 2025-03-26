@@ -1,6 +1,6 @@
 using Application;
 using Infrastructure;
-using Infrastructure.DataBase;
+using Infrastructure.Database;
 
 var builder = WebApplication.CreateBuilder(args);
 

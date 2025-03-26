@@ -39,7 +39,7 @@ namespace Infrastructure
                 )
                 .AddLogging(lb => lb.AddFluentMigratorConsole());
 
-            services.AddScoped<DataBase.MigrationRunner>();
+            services.AddScoped<Database.MigrationRunner>();
 
             return services;
         }

@@ -19,7 +19,7 @@ namespace Infrastructure.Repositories
                 Length = 50,
                 Height = 50,
                 Width = 50,
-                Priсe = 100,
+                Price = 100,
                 Discount = 0,
                 PathPicture = "firsticon",
                 IdSection = 1,
@@ -30,7 +30,7 @@ namespace Infrastructure.Repositories
                 Length = 50,
                 Height = 50,
                 Width = 50,
-                Priсe = 100,
+                Price = 100,
                 Discount = 0,
                 PathPicture = "secondicon",
                 IdSection = 1,
@@ -41,7 +41,7 @@ namespace Infrastructure.Repositories
                 Length = 50,
                 Height = 50,
                 Width = 50,
-                Priсe = 100,
+                Price = 100,
                 Discount = 0,
                 PathPicture = "thirdicon",
                 IdSection = 2,
@@ -95,7 +95,7 @@ namespace Infrastructure.Repositories
                 find.Length = element.Length;
                 find.Height = element.Height;
                 find.Width = element.Width;
-                find.Priсe = element.Priсe;
+                find.Price = element.Price;
                 find.Discount = element.Discount;
                 find.PathPicture = element.PathPicture;
                 find.IdSection = element.IdSection;

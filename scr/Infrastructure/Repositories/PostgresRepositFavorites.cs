@@ -14,23 +14,23 @@ namespace Infrastructure.Repositories
 
         public async Task<(int, int)> Create(Favorites element)
         {
-            (int, int) favoriteid;
+            (int, int) favoriteId;
             try
             {
                 await _connection.OpenAsync();
 
-                favoriteid = await _connection.QuerySingleAsync<(int, int)>(@"
+                favoriteId = await _connection.QuerySingleAsync<(int, int)>(@"
                     INSERT INTO favorites (iduser, idproduct)
                     VALUES (@IdUser, @IdProduct)
                     RETURNING iduser, idproduct"
-                , new { element.IdUser, element.IdProduct });
+                , element);
             }
             finally
             {
                 await _connection.CloseAsync();
             }
 
-            return favoriteid;
+            return favoriteId;
         }
 
         public async Task<bool> Delete(int idUser, int idProduct)
@@ -41,7 +41,7 @@ namespace Infrastructure.Repositories
                 await _connection.OpenAsync();
 
                 affectedRows = await _connection.ExecuteAsync(@"
-                    DELETE FROM favorites WHERE @IdUser = iduser and @IdProduct = idproduct
+                    DELETE FROM favorites WHERE iduser = @IdUser and idproduct = @IdProduct
                     "
                 , new { idUser, idProduct });
             }
@@ -82,7 +82,7 @@ namespace Infrastructure.Repositories
 
                 favorite = await _connection.QueryFirstOrDefaultAsync<Favorites>(@"
                     SELECT iduser, idproduct FROM favorites
-                    WHERE @IdUser = iduser and @IdProduct = idproduct
+                    WHERE iduser = @IdUser and idproduct = @IdProduct
                     "
                 , new { idUser, idProduct });
             }

@@ -26,7 +26,7 @@ namespace Application.Services
 
         public async Task<int?> Create(ProductDto element)
         {
-            var section = _repositSection.ReadById(element.IdSection).Result;
+            var section = await _repositSection.ReadById(element.IdSection);
             if (section == null) return null;
 
             var mapElem = _mapper.Map<Product>(element);
@@ -35,7 +35,7 @@ namespace Application.Services
         }
         public async Task<bool> Delete(int id) //must be transaction
         {
-            ProductDto? element = ReadById(id).Result;
+            ProductDto? element = await ReadById(id);
             if (element == null) return false;
             List<Favorites> memoryFavor = new List<Favorites>();
             List<Review> memoryReviews = new List<Review>();
@@ -46,7 +46,7 @@ namespace Application.Services
                 var favorites = _repositFavorites.ReadAll().Result.Where(x => x.IdProduct == id).ToList();
                 foreach (var v in favorites)
                 {
-                    var resultFavourite = _repositFavorites.Delete(v.IdUser, v.IdProduct).Result;
+                    var resultFavourite = await _repositFavorites.Delete(v.IdUser, v.IdProduct);
                     if (!resultFavourite) throw new Exception();
                     memoryFavor.Add(v);
                 }
@@ -54,7 +54,7 @@ namespace Application.Services
                 var reviews = _repositReview.ReadAll().Result.Where(x => x.IdProduct == id).ToList();
                 foreach (var v in reviews)
                 {
-                    var resultReview = _repositReview.Update(new Review() { Id = v.Id, IdProduct = null, IdUser = v.IdUser, Message = v.Message, PathPicture = v.PathPicture }).Result;
+                    var resultReview = await _repositReview.Update(new Review() { Id = v.Id, IdProduct = null, IdUser = v.IdUser, Message = v.Message, PathPicture = v.PathPicture });
                     if (!resultReview) throw new Exception();
                     memoryReviews.Add(v);
                 }
@@ -62,12 +62,12 @@ namespace Application.Services
                 var attachments = _repositAttachment.ReadAll().Result.Where(x => x.IdProduct == id).ToList();
                 foreach (var v in attachments)
                 {
-                    var resultAttach = _repositAttachment.Delete(v.Id).Result;
+                    var resultAttach = await _repositAttachment.Delete(v.Id);
                     if (!resultAttach) throw new Exception();
                     memoryAttach.Add(v);
                 }
 
-                var result = _repositProduct.Delete(id).Result;
+                var result = await _repositProduct.Delete(id);
                 if (!result) throw new Exception();
 
                 return true;
@@ -109,7 +109,7 @@ namespace Application.Services
             var mapElem = _mapper.Map<Product>(element);
             if (mapElem == null) return false;
 
-            var section = _repositSection.ReadById(mapElem.IdSection).Result;
+            var section = await _repositSection.ReadById(mapElem.IdSection);
             if (section == null) return false;
 
             return await _repositProduct.Update(mapElem);

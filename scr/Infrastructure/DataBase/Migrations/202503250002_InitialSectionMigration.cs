@@ -1,6 +1,6 @@
 ﻿using FluentMigrator;
 
-namespace Infrastructure.DataBase.Migrations
+namespace Infrastructure.Database.Migrations
 {
     [Migration(202503250002)]
     public class InitialSectionMigration : Migration

@@ -1,6 +1,6 @@
 ﻿using FluentMigrator.Runner;
 
-namespace Infrastructure.DataBase
+namespace Infrastructure.Database
 {
     public class MigrationRunner
     {

@@ -11,25 +11,25 @@ namespace Infrastructure.Repositories
         {
             _connection = connection;
         }
-        public async Task<int> Create(Product product) //column "price" does not exist ?????????   column "priсe" of relation "products" does not exist ?????????
+        public async Task<int> Create(Product product)
         {
-            int productid;
+            int productId;
             try
             {
                 await _connection.OpenAsync();
 
-                productid = await _connection.QuerySingleAsync<int>(@"
-                INSERT INTO products (length, height, width, priсe, discount, pathpicture, idsection)
-                VALUES (@Length, @Height, @Width, @Priсe, @Discount, @PathPicture, @IdSection)
+                productId = await _connection.QuerySingleAsync<int>(@"
+                INSERT INTO products (length, height, width, price, discount, pathpicture, idsection)
+                VALUES (@Length, @Height, @Width, @Price, @Discount, @PathPicture, @IdSection)
                 RETURNING id"
-                , product /*new { product.Length, product.Height, product.Width, product.Priсe, product.Discount, product.PathPicture, product.IdSection }*/);
+                , product);
             }
             finally
             {
                 await _connection.CloseAsync();
             }
 
-            return productid;
+            return productId;
         }
         public async Task<bool> Delete(int id)
         {
@@ -39,7 +39,7 @@ namespace Infrastructure.Repositories
                 await _connection.OpenAsync();
 
                 affectedRows = await _connection.ExecuteAsync(@"
-                DELETE FROM products WHERE @Id = id
+                DELETE FROM products WHERE id = @Id
                 "
                 , new { Id = id });
             }
