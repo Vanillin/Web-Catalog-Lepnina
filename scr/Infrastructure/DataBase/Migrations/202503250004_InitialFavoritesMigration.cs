@@ -8,13 +8,13 @@ namespace Infrastructure.Database.Migrations
         public override void Up()
         {
             Create.Table("favorites")
-                .WithColumn("iduser").AsInt32().PrimaryKey().NotNullable().ForeignKey("users", "id")
-                .WithColumn("idproduct").AsInt32().PrimaryKey().NotNullable().ForeignKey("products", "id")
+                .WithColumn("id_user").AsInt32().PrimaryKey().NotNullable().ForeignKey("users", "id")
+                .WithColumn("id_product").AsInt32().PrimaryKey().NotNullable().ForeignKey("products", "id")
             ;
 
             Insert.IntoTable("favorites")
-                    .Row(new { iduser = 1, idproduct = 2 })
-                    .Row(new { iduser = 2, idproduct = 3 });
+                    .Row(new { id_user = 1, id_product = 2 })
+                    .Row(new { id_user = 2, id_product = 3 });
         }
         public override void Down()
         {

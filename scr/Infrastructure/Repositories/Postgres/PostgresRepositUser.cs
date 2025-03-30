@@ -4,32 +4,32 @@ using Npgsql;
 
 namespace Infrastructure.Repositories
 {
-    public class PostgresRepositProduct : IRepositProduct
+    public class PostgresRepositUser : IRepositUser
     {
         private readonly NpgsqlConnection _connection;
-        public PostgresRepositProduct(NpgsqlConnection connection)
+        public PostgresRepositUser(NpgsqlConnection connection)
         {
             _connection = connection;
         }
-        public async Task<int> Create(Product product)
+        public async Task<int> Create(User user)
         {
-            int productId;
+            int userId;
             try
             {
                 await _connection.OpenAsync();
 
-                productId = await _connection.QuerySingleAsync<int>(@"
-                INSERT INTO products (length, height, width, price, discount, pathpicture, idsection)
-                VALUES (@Length, @Height, @Width, @Price, @Discount, @PathPicture, @IdSection)
+                userId = await _connection.QuerySingleAsync<int>(@"
+                INSERT INTO users (name, path_icon)
+                VALUES (@Name, @PathIcon)
                 RETURNING id"
-                , product);
+                , user);
             }
             finally
             {
                 await _connection.CloseAsync();
             }
 
-            return productId;
+            return userId;
         }
         public async Task<bool> Delete(int id)
         {
@@ -39,7 +39,7 @@ namespace Infrastructure.Repositories
                 await _connection.OpenAsync();
 
                 affectedRows = await _connection.ExecuteAsync(@"
-                DELETE FROM products WHERE id = @Id
+                DELETE FROM users WHERE id = @Id
                 "
                 , new { Id = id });
             }
@@ -50,15 +50,15 @@ namespace Infrastructure.Repositories
 
             return affectedRows > 0;
         }
-        public async Task<IEnumerable<Product>> ReadAll()
+        public async Task<IEnumerable<User>> ReadAll()
         {
-            IEnumerable<Product> products;
+            IEnumerable<User> users;
             try
             {
                 await _connection.OpenAsync();
 
-                products = await _connection.QueryAsync<Product>(@"
-                SELECT id, length, height, width, price, discount, pathpicture, idsection FROM products
+                users = await _connection.QueryAsync<User>(@"
+                SELECT id, name, path_icon as PathIcon FROM users
                 "
                 );
             }
@@ -67,17 +67,17 @@ namespace Infrastructure.Repositories
                 await _connection.CloseAsync();
             }
 
-            return products;
+            return users;
         }
-        public async Task<Product?> ReadById(int id)
+        public async Task<User?> ReadById(int id)
         {
-            Product? product;
+            User? user;
             try
             {
                 await _connection.OpenAsync();
 
-                product = await _connection.QueryFirstOrDefaultAsync<Product>(@"
-                SELECT id, length, height, width, price, discount, pathpicture, idsection FROM products
+                user = await _connection.QueryFirstOrDefaultAsync<User>(@"
+                SELECT id, name, path_icon as PathIcon FROM users
                 WHERE id = @Id
                 "
                 , new { Id = id });
@@ -87,9 +87,9 @@ namespace Infrastructure.Repositories
                 await _connection.CloseAsync();
             }
 
-            return product;
+            return user;
         }
-        public async Task<bool> Update(Product product)
+        public async Task<bool> Update(User user)
         {
             int affectedRow;
             try
@@ -97,18 +97,12 @@ namespace Infrastructure.Repositories
                 await _connection.OpenAsync();
 
                 affectedRow = await _connection.ExecuteAsync(@"
-                UPDATE products
-                SET
-                    length = @Length,
-                    height = @Height,
-                    width = @Width,
-                    price = @Price,
-                    discount = @Discount,
-                    pathpicture = @PathPicture,
-                    idsection = @IdSection
+                UPDATE users
+                SET name = @Name,
+                    path_icon =  @PathIcon
                 WHERE id = @Id
                 "
-                , product);
+                , user);
             }
             finally
             {

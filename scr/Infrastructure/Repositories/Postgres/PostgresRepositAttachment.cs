@@ -4,32 +4,32 @@ using Npgsql;
 
 namespace Infrastructure.Repositories
 {
-    public class PostgresRepositReview : IRepositReview
+    public class PostgresRepositAttachment : IRepositAttachment
     {
         private readonly NpgsqlConnection _connection;
-        public PostgresRepositReview(NpgsqlConnection connection)
+        public PostgresRepositAttachment(NpgsqlConnection connection)
         {
             _connection = connection;
         }
-        public async Task<int> Create(Review review)
+        public async Task<int> Create(Attachment attachment)
         {
-            int reviewId;
+            int attachmentId;
             try
             {
                 await _connection.OpenAsync();
 
-                reviewId = await _connection.QuerySingleAsync<int>(@"
-                INSERT INTO reviews (message, pathpicture, iduser, idproduct)
-                VALUES (@Message, @PathPicture, @IdUser, @IdProduct)
+                attachmentId = await _connection.QuerySingleAsync<int>(@"
+                INSERT INTO attachments (message, path_picture, id_product)
+                VALUES (@Message, @PathPicture, @IdProduct)
                 RETURNING id"
-                , review);
+                , attachment);
             }
             finally
             {
                 await _connection.CloseAsync();
             }
 
-            return reviewId;
+            return attachmentId;
         }
         public async Task<bool> Delete(int id)
         {
@@ -39,7 +39,7 @@ namespace Infrastructure.Repositories
                 await _connection.OpenAsync();
 
                 affectedRows = await _connection.ExecuteAsync(@"
-                DELETE FROM reviews WHERE id = @Id
+                DELETE FROM attachments WHERE id = @Id
                 "
                 , new { Id = id });
             }
@@ -50,15 +50,15 @@ namespace Infrastructure.Repositories
 
             return affectedRows > 0;
         }
-        public async Task<IEnumerable<Review>> ReadAll()
+        public async Task<IEnumerable<Attachment>> ReadAll()
         {
-            IEnumerable<Review> reviews;
+            IEnumerable<Attachment> attachments;
             try
             {
                 await _connection.OpenAsync();
 
-                reviews = await _connection.QueryAsync<Review>(@"
-                SELECT id, message, pathpicture, iduser, idproduct FROM reviews
+                attachments = await _connection.QueryAsync<Attachment>(@"
+                SELECT id, message, path_picture as PathPicture, id_product as IdProduct FROM attachments
                 "
                 );
             }
@@ -67,17 +67,17 @@ namespace Infrastructure.Repositories
                 await _connection.CloseAsync();
             }
 
-            return reviews;
+            return attachments;
         }
-        public async Task<Review?> ReadById(int id)
+        public async Task<Attachment?> ReadById(int id)
         {
-            Review? review;
+            Attachment? attachment;
             try
             {
                 await _connection.OpenAsync();
 
-                review = await _connection.QueryFirstOrDefaultAsync<Review>(@"
-                SELECT id, message, pathpicture, iduser, idproduct FROM reviews
+                attachment = await _connection.QueryFirstOrDefaultAsync<Attachment>(@"
+                SELECT id, message, path_picture as PathPicture, id_product as IdProduct FROM attachments
                 WHERE id = @Id
                 "
                 , new { Id = id });
@@ -87,9 +87,9 @@ namespace Infrastructure.Repositories
                 await _connection.CloseAsync();
             }
 
-            return review;
+            return attachment;
         }
-        public async Task<bool> Update(Review review)
+        public async Task<bool> Update(Attachment attachment)
         {
             int affectedRow;
             try
@@ -97,15 +97,13 @@ namespace Infrastructure.Repositories
                 await _connection.OpenAsync();
 
                 affectedRow = await _connection.ExecuteAsync(@"
-                UPDATE reviews
-                SET 
-                    message = @Message,
-                    pathpicture =  @PathPicture,
-                    iduser = @IdUser,
-                    idproduct = @IdProduct
+                UPDATE attachments
+                SET message = @Message,
+                    path_picture =  @PathPicture,
+                    id_product = @IdProduct
                 WHERE id = @Id
                 "
-                , review);
+                , attachment);
             }
             finally
             {

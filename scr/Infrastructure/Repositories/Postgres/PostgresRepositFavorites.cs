@@ -20,7 +20,7 @@ namespace Infrastructure.Repositories
                 await _connection.OpenAsync();
 
                 favoriteId = await _connection.QuerySingleAsync<(int, int)>(@"
-                    INSERT INTO favorites (iduser, idproduct)
+                    INSERT INTO favorites (id_user, id_product)
                     VALUES (@IdUser, @IdProduct)
                     RETURNING iduser, idproduct"
                 , element);
@@ -41,7 +41,7 @@ namespace Infrastructure.Repositories
                 await _connection.OpenAsync();
 
                 affectedRows = await _connection.ExecuteAsync(@"
-                    DELETE FROM favorites WHERE iduser = @IdUser and idproduct = @IdProduct
+                    DELETE FROM favorites WHERE id_user = @IdUser and id_product = @IdProduct
                     "
                 , new { idUser, idProduct });
             }
@@ -61,7 +61,7 @@ namespace Infrastructure.Repositories
                 await _connection.OpenAsync();
 
                 favorites = await _connection.QueryAsync<Favorites>(@"
-                    SELECT iduser, idproduct FROM favorites
+                    SELECT id_user as IdUser, id_product as IdProduct FROM favorites
                     "
                 );
             }
@@ -81,7 +81,7 @@ namespace Infrastructure.Repositories
                 await _connection.OpenAsync();
 
                 favorite = await _connection.QueryFirstOrDefaultAsync<Favorites>(@"
-                    SELECT iduser, idproduct FROM favorites
+                    SELECT id_user as IdUser, id_product as IdProduct FROM favorites
                     WHERE iduser = @IdUser and idproduct = @IdProduct
                     "
                 , new { idUser, idProduct });

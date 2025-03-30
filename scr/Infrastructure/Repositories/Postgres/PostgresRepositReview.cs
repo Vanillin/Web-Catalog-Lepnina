@@ -4,32 +4,32 @@ using Npgsql;
 
 namespace Infrastructure.Repositories
 {
-    public class PostgresRepositAttachment : IRepositAttachment
+    public class PostgresRepositReview : IRepositReview
     {
         private readonly NpgsqlConnection _connection;
-        public PostgresRepositAttachment(NpgsqlConnection connection)
+        public PostgresRepositReview(NpgsqlConnection connection)
         {
             _connection = connection;
         }
-        public async Task<int> Create(Attachment attachment)
+        public async Task<int> Create(Review review)
         {
-            int attachmentId;
+            int reviewId;
             try
             {
                 await _connection.OpenAsync();
 
-                attachmentId = await _connection.QuerySingleAsync<int>(@"
-                INSERT INTO attachments (message, pathpicture, idproduct)
-                VALUES (@Message, @PathPicture, @IdProduct)
+                reviewId = await _connection.QuerySingleAsync<int>(@"
+                INSERT INTO reviews (message, path_picture, id_user, id_product)
+                VALUES (@Message, @PathPicture, @IdUser, @IdProduct)
                 RETURNING id"
-                , attachment);
+                , review);
             }
             finally
             {
                 await _connection.CloseAsync();
             }
 
-            return attachmentId;
+            return reviewId;
         }
         public async Task<bool> Delete(int id)
         {
@@ -39,7 +39,7 @@ namespace Infrastructure.Repositories
                 await _connection.OpenAsync();
 
                 affectedRows = await _connection.ExecuteAsync(@"
-                DELETE FROM attachments WHERE id = @Id
+                DELETE FROM reviews WHERE id = @Id
                 "
                 , new { Id = id });
             }
@@ -50,15 +50,15 @@ namespace Infrastructure.Repositories
 
             return affectedRows > 0;
         }
-        public async Task<IEnumerable<Attachment>> ReadAll()
+        public async Task<IEnumerable<Review>> ReadAll()
         {
-            IEnumerable<Attachment> attachments;
+            IEnumerable<Review> reviews;
             try
             {
                 await _connection.OpenAsync();
 
-                attachments = await _connection.QueryAsync<Attachment>(@"
-                SELECT id, message, pathpicture, idproduct FROM attachments
+                reviews = await _connection.QueryAsync<Review>(@"
+                SELECT id, message, path_picture as PathPicture, id_user as IsUser, id_product as IdProduct FROM reviews
                 "
                 );
             }
@@ -67,17 +67,17 @@ namespace Infrastructure.Repositories
                 await _connection.CloseAsync();
             }
 
-            return attachments;
+            return reviews;
         }
-        public async Task<Attachment?> ReadById(int id)
+        public async Task<Review?> ReadById(int id)
         {
-            Attachment? attachment;
+            Review? review;
             try
             {
                 await _connection.OpenAsync();
 
-                attachment = await _connection.QueryFirstOrDefaultAsync<Attachment>(@"
-                SELECT id, message, pathpicture, idproduct FROM attachments
+                review = await _connection.QueryFirstOrDefaultAsync<Review>(@"
+                SELECT id, message, path_picture as PathPicture, id_user as IsUser, id_product as IdProduct FROM reviews
                 WHERE id = @Id
                 "
                 , new { Id = id });
@@ -87,9 +87,9 @@ namespace Infrastructure.Repositories
                 await _connection.CloseAsync();
             }
 
-            return attachment;
+            return review;
         }
-        public async Task<bool> Update(Attachment attachment)
+        public async Task<bool> Update(Review review)
         {
             int affectedRow;
             try
@@ -97,13 +97,15 @@ namespace Infrastructure.Repositories
                 await _connection.OpenAsync();
 
                 affectedRow = await _connection.ExecuteAsync(@"
-                UPDATE attachments
-                SET message = @Message,
-                    pathpicture =  @PathPicture,
-                    idproduct = @IdProduct
+                UPDATE reviews
+                SET 
+                    message = @Message,
+                    path_picture =  @PathPicture,
+                    id_user = @IdUser,
+                    id_product = @IdProduct
                 WHERE id = @Id
                 "
-                , attachment);
+                , review);
             }
             finally
             {
