@@ -27,7 +27,7 @@ namespace Application.Services
         }
         public async Task<bool> Delete(int id) //must be transaction
         {
-            UserDto? element = ReadById(id).Result;
+            UserDto? element = await ReadById(id);
             if (element == null) return false;
             List<Favorites> memoryFavor = new List<Favorites>();
             List<Review> memoryReviews = new List<Review>();
@@ -37,20 +37,20 @@ namespace Application.Services
                 var favorites = _repositFavorites.ReadAll().Result.Where(x => x.IdUser == id).ToList();
                 foreach (var v in favorites)
                 {
-                    var resultFavourite = _repositFavorites.Delete(v.IdUser, v.IdProduct);
-                    if (resultFavourite == null) throw new Exception();
+                    var resultFavourite = await _repositFavorites.Delete(v.IdUser, v.IdProduct);
+                    if (!resultFavourite) throw new Exception();
                     memoryFavor.Add(v);
                 }
 
                 var reviews = _repositReview.ReadAll().Result.Where(x => x.IdUser == id).ToList();
                 foreach (var v in reviews)
                 {
-                    var resultReview = _repositReview.Delete(v.Id).Result;
+                    var resultReview = await _repositReview.Delete(v.Id);
                     if (!resultReview) throw new Exception();
                     memoryReviews.Add(v);
                 }
 
-                var result = _repositUser.Delete(id).Result;
+                var result = await _repositUser.Delete(id);
                 if (!result) throw new Exception();
 
                 return true;

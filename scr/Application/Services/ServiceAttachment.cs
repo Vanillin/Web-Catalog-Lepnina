@@ -23,7 +23,7 @@ namespace Application.Services
             var mapElem = _mapper.Map<Attachment>(element);
             if (mapElem == null) return null;
 
-            var product = _repositProduct.ReadById(mapElem.IdProduct);
+            var product = await _repositProduct.ReadById(mapElem.IdProduct);
             if (product == null) return null;
 
             return await _repositAttachment.Create(mapElem); //id is changed later
@@ -51,7 +51,7 @@ namespace Application.Services
             var mapElem = _mapper.Map<Attachment>(element);
             if (mapElem == null) return false;
 
-            var product = _repositProduct.ReadById(mapElem.IdProduct);
+            var product = await _repositProduct.ReadById(mapElem.IdProduct);
             if (product == null) return false;
 
             return await _repositAttachment.Update(mapElem);

@@ -1,52 +1,48 @@
-﻿using Domain.Entities;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Mail;
-using System.Threading.Tasks;
+﻿using System.Collections;
+using System.ComponentModel.DataAnnotations;
+using Domain.Entities;
 
 namespace Infrastructure.Repositories
 {
-    public class RepositReview : IRepositReview
+    public class InMemoryRepositAttachment : IRepositAttachment
     {
-        private List<Review> _reviews;
-        public RepositReview()
+        private List<Attachment> _attachments;
+        public InMemoryRepositAttachment()
         {
-            _reviews = new List<Review>();
+            _attachments = new List<Attachment>();
 
-            _reviews.Add(new Review()
+            _attachments.Add(new Attachment()
             {
                 Id = 1,
-                Message = "firstmessage",
-                PathPicture = "firstpath",
-                IdUser = 1,
-                IdProduct = 2,
+                Message = "one",
+                PathPicture = "onepath",
+                IdProduct = 1,
             });
-            _reviews.Add(new Review()
+            _attachments.Add(new Attachment()
             {
                 Id = 2,
-                Message = "secondmessage",
+                Message = "second",
                 PathPicture = "secondpath",
-                IdUser = 3,
-                IdProduct = 1,
+                IdProduct = 3,
             });
         }
 
-        private Review? Find(int id)
+        private Attachment? Find(int id)
         {
-            return _reviews.FirstOrDefault(v => v.Id == id);
+            return _attachments.FirstOrDefault(v => v.Id == id);
         }
         private int FindMaxId()
         {
             int max = 0;
-            foreach (var v in _reviews)
+            foreach (var v in  _attachments) 
                 if (v.Id > max)
                     max = v.Id;
             return max;
         }
-        public Task<int> Create(Review element)
+        public Task<int> Create(Attachment element)
         {
-            element.Id = FindMaxId() +1;
-            _reviews.Add(element);
+            element.Id = FindMaxId() + 1;
+            _attachments.Add(element);
             return Task.FromResult(element.Id);
         }
         public Task<bool> Delete(int id)
@@ -54,30 +50,29 @@ namespace Infrastructure.Repositories
             var find = Find(id);
             if (find != null)
             {
-                _reviews.Remove(find);
+                _attachments.Remove(find);
                 return Task.FromResult(true);
             }
             else
                 return Task.FromResult(false);
         }
-        public Task<IEnumerable<Review>> ReadAll()
+        public Task<IEnumerable<Attachment>> ReadAll()
         {
-            IEnumerable<Review> reviews = _reviews;
-            return Task.FromResult(reviews);
+            IEnumerable<Attachment> retur = _attachments;
+            return Task.FromResult(retur);
         }
-        public Task<Review?> ReadById(int id)
+        public Task<Attachment?> ReadById(int id)
         {
             var find = Find(id);
             return Task.FromResult(find);
         }
-        public Task<bool> Update(Review element)
+        public Task<bool> Update(Attachment element)
         {
             var find = Find(element.Id);
             if (find != null)
             {
                 find.Message = element.Message;
                 find.PathPicture = element.PathPicture;
-                find.IdUser = element.IdUser;
                 find.IdProduct = element.IdProduct;
                 return Task.FromResult(true);
             }

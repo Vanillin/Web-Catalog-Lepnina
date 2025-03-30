@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
-    public class RepositFavorites : IRepositFavorites
+    public class InMemoryRepositFavorites : IRepositFavorites
     {
         private List<Favorites> _userFavorites;
-        public RepositFavorites()
+        public InMemoryRepositFavorites()
         {
             _userFavorites = new List<Favorites>();
 
