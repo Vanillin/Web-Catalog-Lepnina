@@ -1,5 +1,6 @@
-﻿using System.Xml.Linq;
-using Application.Dto;
+﻿using Application.Dto;
+using Application.Exception;
+using Application.Request;
 using AutoMapper;
 using Domain.Entities;
 using Infrastructure.Repositories;
@@ -18,15 +19,19 @@ namespace Application.Services
             _mapper = mapper;
         }
 
-        public async Task<int?> Create(AttachmentDto element)
+        public async Task<int?> Create(CreateAttachmentRequest element)
         {
-            var mapElem = _mapper.Map<Attachment>(element);
-            if (mapElem == null) return null;
+            var product = await _repositProduct.ReadById(element.IdProduct);
+            if (product == null) throw new NotFoundApplicationException("Product is not found");
 
-            var product = await _repositProduct.ReadById(mapElem.IdProduct);
-            if (product == null) return null;
-
-            return await _repositAttachment.Create(mapElem); //id is changed later
+            return await _repositAttachment.Create(
+                new Attachment()
+                {
+                    IdProduct = element.IdProduct,
+                    Message = element.Message,
+                    PathPicture = element.PathPicture,
+                }
+                );
         }
         public async Task<bool> Delete(int id)
         {
@@ -41,20 +46,25 @@ namespace Application.Services
         public async Task<AttachmentDto?> ReadById(int id)
         {
             var element = await _repositAttachment.ReadById(id);
-            if (element == null) return null;
+            if (element == null) throw new NotFoundApplicationException("Attachment is not found"); ;
 
             var mapElem = _mapper.Map<AttachmentDto>(element);
             return mapElem;
         }
-        public async Task<bool> Update(AttachmentDto element)
+        public async Task<bool> Update(UpdateAttachmentRequest element)
         {
-            var mapElem = _mapper.Map<Attachment>(element);
-            if (mapElem == null) return false;
+            var product = await _repositProduct.ReadById(element.IdProduct);
+            if (product == null) throw new NotFoundApplicationException("Product is not found"); ;
 
-            var product = await _repositProduct.ReadById(mapElem.IdProduct);
-            if (product == null) return false;
-
-            return await _repositAttachment.Update(mapElem);
+            return await _repositAttachment.Update(
+                new Attachment()
+                {
+                    Id = element.Id,
+                    IdProduct = element.IdProduct,
+                    Message = element.Message,
+                    PathPicture = element.PathPicture,
+                }
+                );
         }
     }
 }

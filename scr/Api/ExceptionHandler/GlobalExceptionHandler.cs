@@ -1,0 +1,35 @@
+﻿using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+using System.Net;
+
+namespace Api.ExceptionHandler
+{
+    public class GlobalExceptionHandler(IProblemDetailsService _problemDetailsService) : IExceptionHandler
+    {
+        public async ValueTask<bool> TryHandleAsync(HttpContext httpContext
+            , Exception exception, CancellationToken cancellationToken)
+        {
+            httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            httpContext.Response.ContentType = "application/problem+json";
+
+            var problemDetails = new ProblemDetails
+            {
+                Status = (int)HttpStatusCode.InternalServerError,
+                Title = "An error occurred while processing your request",
+                Detail = exception.Message,
+                Instance = httpContext.Request.Path,
+                Type = exception.GetType().Name
+            };
+
+            var problemDetailContext = new ProblemDetailsContext
+            {
+                HttpContext = httpContext,
+                ProblemDetails = problemDetails,
+                Exception = exception
+            };
+
+            await _problemDetailsService.WriteAsync(problemDetailContext);
+            return true;
+        }
+    }
+}

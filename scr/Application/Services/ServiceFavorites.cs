@@ -1,4 +1,5 @@
 ﻿using Application.Dto;
+using Application.Exception;
 using AutoMapper;
 using Domain.Entities;
 using Infrastructure.Repositories;
@@ -22,17 +23,17 @@ namespace Application.Services
         public async Task<(int,int)?> Create(FavoritesDto element)
         {
             var mapElem = _mapper.Map<Favorites>(element);
-            if (mapElem == null) return null;
+            if (mapElem == null) throw new MappingApplicationException("Create element is not correct");
 
             var user = await _repositUser.ReadById(mapElem.IdUser);
-            if (user == null) return null;
+            if (user == null) throw new NotFoundApplicationException("User is not found");
 
             var product = await _repositProduct.ReadById(mapElem.IdProduct);
-            if (product == null) return null;
+            if (product == null) throw new NotFoundApplicationException("Product is not found");
 
             FavoritesDto? id = await ReadById(element.IdUser, element.IdProduct);
             if (id == null) return await _repositFavorites.Create(mapElem);
-            else return null;
+            else throw new AlreadyExistsApplicationException("Favorite already exists");
         }
         public async Task<bool> Delete(int idUser, int idProduct)
         {
@@ -47,7 +48,7 @@ namespace Application.Services
         public async Task<FavoritesDto?> ReadById(int idUser, int idProduct)
         {
             var element = await _repositFavorites.ReadById(idUser, idProduct);
-            if (element == null) return null;
+            if (element == null) throw new NotFoundApplicationException("Favorite is not found");
 
             var mapElem = _mapper.Map<FavoritesDto>(element);
             return mapElem;

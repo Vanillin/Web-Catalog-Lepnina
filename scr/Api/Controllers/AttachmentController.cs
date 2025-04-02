@@ -1,4 +1,5 @@
 using Application.Dto;
+using Application.Request;
 using Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,7 +31,7 @@ public class AttachmentController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Add([FromBody] AttachmentDto attachment)
+    public async Task<IActionResult> Add([FromBody] CreateAttachmentRequest attachment)
     {
         var result = await _serviceAttachment.Create(attachment);
         if (result == null) return BadRequest();
@@ -38,7 +39,7 @@ public class AttachmentController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<IActionResult> Update([FromBody] AttachmentDto attachment)
+    public async Task<IActionResult> Update([FromBody] UpdateAttachmentRequest attachment)
     {
         var result = await _serviceAttachment.Update(attachment);
         return Ok(result);

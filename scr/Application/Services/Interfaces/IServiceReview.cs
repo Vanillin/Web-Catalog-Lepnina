@@ -1,4 +1,5 @@
 ﻿using Application.Dto;
+using Application.Request;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -9,8 +10,8 @@ namespace Application.Services
     {
         Task<ReviewDto?> ReadById(int id);
         Task<IEnumerable<ReviewDto>> ReadAll();
-        Task<int?> Create(ReviewDto element);
-        Task<bool> Update(ReviewDto element);
+        Task<int?> Create(CreateReviewRequest element);
+        Task<bool> Update(UpdateReviewRequest element);
         Task<bool> Delete(int id);
     }
 }

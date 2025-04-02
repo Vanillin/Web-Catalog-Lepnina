@@ -1,4 +1,6 @@
 ﻿using Application.Dto;
+using Application.Exception;
+using Application.Request;
 using AutoMapper;
 using Domain.Entities;
 using Infrastructure.Repositories;
@@ -24,19 +26,28 @@ namespace Application.Services
             _mapper = mapper;
         }
 
-        public async Task<int?> Create(ProductDto element)
+        public async Task<int?> Create(CreateProductRequest element)
         {
             var section = await _repositSection.ReadById(element.IdSection);
-            if (section == null) return null;
+            if (section == null) throw new NotFoundApplicationException("Section is not found");
 
-            var mapElem = _mapper.Map<Product>(element);
-            if (mapElem == null) return null;
-            return await _repositProduct.Create(mapElem); //id is changed later
+            return await _repositProduct.Create(
+                new Product()
+                {
+                    IdSection = element.IdSection,
+                    Length = element.Length,
+                    Height = element.Height,
+                    Width = element.Width,
+                    Price = element.Price,
+                    Discount = element.Discount,
+                    PathPicture = element.PathPicture
+                }
+                );
         }
         public async Task<bool> Delete(int id) //must be transaction
         {
             ProductDto? element = await ReadById(id);
-            if (element == null) return false;
+            if (element == null) throw new NotFoundApplicationException("Product is not found");
             List<Favorites> memoryFavor = new List<Favorites>();
             List<Review> memoryReviews = new List<Review>();
             List<Attachment> memoryAttach = new List<Attachment>();
@@ -47,7 +58,7 @@ namespace Application.Services
                 foreach (var v in favorites)
                 {
                     var resultFavourite = await _repositFavorites.Delete(v.IdUser, v.IdProduct);
-                    if (!resultFavourite) throw new Exception();
+                    if (!resultFavourite) throw new System.Exception();
                     memoryFavor.Add(v);
                 }
 
@@ -55,7 +66,7 @@ namespace Application.Services
                 foreach (var v in reviews)
                 {
                     var resultReview = await _repositReview.Update(new Review() { Id = v.Id, IdProduct = null, IdUser = v.IdUser, Message = v.Message, PathPicture = v.PathPicture });
-                    if (!resultReview) throw new Exception();
+                    if (!resultReview) throw new System.Exception();
                     memoryReviews.Add(v);
                 }
 
@@ -63,16 +74,16 @@ namespace Application.Services
                 foreach (var v in attachments)
                 {
                     var resultAttach = await _repositAttachment.Delete(v.Id);
-                    if (!resultAttach) throw new Exception();
+                    if (!resultAttach) throw new System.Exception();
                     memoryAttach.Add(v);
                 }
 
                 var result = await _repositProduct.Delete(id);
-                if (!result) throw new Exception();
+                if (!result) throw new System.Exception();
 
                 return true;
             }
-            catch (Exception)
+            catch (System.Exception)
             {
                 foreach (var v in memoryFavor)
                 {
@@ -87,7 +98,7 @@ namespace Application.Services
                     await _repositAttachment.Create(v);
                 }
 
-                return false;
+                throw new TransactionApplicationException("Something gone wrong");
             }
         }
         public async Task<IEnumerable<ProductDto>> ReadAll()
@@ -99,20 +110,29 @@ namespace Application.Services
         public async Task<ProductDto?> ReadById(int id)
         {
             var element = await _repositProduct.ReadById(id);
-            if (element == null) return null;
+            if (element == null) throw new NotFoundApplicationException("Product is not found");
 
             var mapElem = _mapper.Map<ProductDto>(element);
             return mapElem;
         }
-        public async Task<bool> Update(ProductDto element)
+        public async Task<bool> Update(UpdateProductRequest element)
         {
-            var mapElem = _mapper.Map<Product>(element);
-            if (mapElem == null) return false;
+            var section = await _repositSection.ReadById(element.IdSection);
+            if (section == null) throw new NotFoundApplicationException("Section is not found");
 
-            var section = await _repositSection.ReadById(mapElem.IdSection);
-            if (section == null) return false;
-
-            return await _repositProduct.Update(mapElem);
+            return await _repositProduct.Update(
+                new Product()
+                {
+                    Id = element.Id,
+                    IdSection = element.IdSection,
+                    Length = element.Length,
+                    Height = element.Height,
+                    Width = element.Width,
+                    Price = element.Price,
+                    Discount = element.Discount,
+                    PathPicture = element.PathPicture
+                }
+                );
         }
     }
 }

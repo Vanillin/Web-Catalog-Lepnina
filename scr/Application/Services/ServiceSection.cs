@@ -1,4 +1,6 @@
 ﻿using Application.Dto;
+using Application.Exception;
+using Application.Request;
 using AutoMapper;
 using Domain.Entities;
 using Infrastructure.Repositories;
@@ -17,16 +19,18 @@ namespace Application.Services
             _mapper = mapper;
         }
 
-        public async Task<int?> Create(SectionDto element)
+        public async Task<int?> Create(CreateSectionRequest element)
         {
-            var mapElem = _mapper.Map<Section>(element);
-            if (mapElem == null) return null;
-            return await _repositSection.Create(mapElem); //id is changed later
+            return await _repositSection.Create(new Section()
+            {
+                Name = element.Name,
+            }
+            );
         }
         public async Task<bool> Delete(int id) //must be transaction
         {
             SectionDto? element = await ReadById(id);
-            if (element == null) return false;
+            if (element == null) throw new NotFoundApplicationException("Section is not found");
             List<Product> memoryProduct = new List<Product>();
 
             try
@@ -35,23 +39,23 @@ namespace Application.Services
                 foreach (var v in products)
                 {
                     var resultProduct = await _repositProduct.Delete(v.Id);
-                    if (!resultProduct) throw new Exception();
+                    if (!resultProduct) throw new System.Exception();
                     memoryProduct.Add(v);
                 }
 
                 var result = await _repositSection.Delete(id);
-                if (!result) throw new Exception();
+                if (!result) throw new System.Exception();
 
                 return true;
             }
-            catch (Exception)
+            catch (System.Exception)
             {
                 foreach (var v in memoryProduct)
                 {
                     await _repositProduct.Create(v);
                 }
 
-                return false;
+                throw new TransactionApplicationException("Something gone wrong");
             }
         }
         public async Task<IEnumerable<SectionDto>> ReadAll()
@@ -63,16 +67,19 @@ namespace Application.Services
         public async Task<SectionDto?> ReadById(int id)
         {
             var element = await _repositSection.ReadById(id);
-            if (element == null) return null;
+            if (element == null) throw new NotFoundApplicationException("Section is not found");
 
             var mapElem = _mapper.Map<SectionDto>(element);
             return mapElem;
         }
-        public async Task<bool> Update(SectionDto element)
+        public async Task<bool> Update(UpdateSectionRequest element)
         {
-            var mapElem = _mapper.Map<Section>(element);
-            if ( mapElem == null) return false;
-            return await _repositSection.Update(mapElem);
+            return await _repositSection.Update(new Section()
+            {
+                Id = element.Id,
+                Name = element.Name,
+            }
+            );
         }
     }
 }

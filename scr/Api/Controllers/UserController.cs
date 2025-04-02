@@ -1,4 +1,5 @@
 using Application.Dto;
+using Application.Request;
 using Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,7 +31,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Add([FromBody] UserDto user)
+    public async Task<IActionResult> Add([FromBody] CreateUserRequest user)
     {
         var result = await _serviceUser.Create(user);
         if (result == null) return BadRequest();
@@ -38,7 +39,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<IActionResult> Update([FromBody] UserDto user)
+    public async Task<IActionResult> Update([FromBody] UpdateUserRequest user)
     {
         var result = await _serviceUser.Update(user);
         return Ok(result);
