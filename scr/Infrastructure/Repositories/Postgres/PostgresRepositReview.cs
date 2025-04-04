@@ -11,9 +11,9 @@ namespace Infrastructure.Repositories
         {
             _connection = connection;
         }
-        public async Task<int> Create(Review review)
+        public async Task<int?> Create(Review review)
         {
-            int reviewId;
+            int? reviewId = null;
             try
             {
                 await _connection.OpenAsync();

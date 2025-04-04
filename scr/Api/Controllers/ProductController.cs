@@ -1,4 +1,5 @@
 using Application.Dto;
+using Application.Request;
 using Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,18 +31,17 @@ public class ProductController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Add([FromBody] ProductDto product)
+    public async Task<IActionResult> Add([FromBody] CreateProductRequest product)
     {
-        var result = await _serviceProduct.Create(product);
-        if (result == null) return BadRequest();
-        return Ok(result);
+        if (product == null) return NotFound();
+        return Ok(await _serviceProduct.Create(product));
     }
 
     [HttpPut]
-    public async Task<IActionResult> Update([FromBody] ProductDto product)
+    public async Task<IActionResult> Update([FromBody] UpdateProductRequest product)
     {
-        var result = await _serviceProduct.Update(product);
-        return Ok(result);
+        if (product == null) return NotFound();
+        return Ok(await _serviceProduct.Update(product));
     }
 
     [HttpDelete]

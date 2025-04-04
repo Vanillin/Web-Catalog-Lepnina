@@ -1,4 +1,6 @@
 ﻿using Application.Dto;
+using Application.Exception;
+using Application.Request;
 using AutoMapper;
 using Domain.Entities;
 using Infrastructure.Repositories;
@@ -19,16 +21,22 @@ namespace Application.Services
             _mapper = mapper;
         }
 
-        public async Task<int?> Create(UserDto element)
+        public async Task<int?> Create(CreateUserRequest request)
         {
-            var mapElem = _mapper.Map<User>(element);
-            if (mapElem == null) return null;
-            return await _repositUser.Create(mapElem); //id is changed later
+            var result = await _repositUser.Create(new User()
+            {
+                Name = request.Name,
+                PathIcon = request.PathIcon,
+            }
+            );
+
+            if (result == null) throw new EntityCreateException("User is not create");
+            return result;
         }
         public async Task<bool> Delete(int id) //must be transaction
         {
             UserDto? element = await ReadById(id);
-            if (element == null) return false;
+            if (element == null) throw new EntityNotFoundException("User is not found");
             List<Favorites> memoryFavor = new List<Favorites>();
             List<Review> memoryReviews = new List<Review>();
 
@@ -38,7 +46,7 @@ namespace Application.Services
                 foreach (var v in favorites)
                 {
                     var resultFavourite = await _repositFavorites.Delete(v.IdUser, v.IdProduct);
-                    if (!resultFavourite) throw new Exception();
+                    if (!resultFavourite) throw new System.Exception();
                     memoryFavor.Add(v);
                 }
 
@@ -46,16 +54,16 @@ namespace Application.Services
                 foreach (var v in reviews)
                 {
                     var resultReview = await _repositReview.Delete(v.Id);
-                    if (!resultReview) throw new Exception();
+                    if (!resultReview) throw new System.Exception();
                     memoryReviews.Add(v);
                 }
 
                 var result = await _repositUser.Delete(id);
-                if (!result) throw new Exception();
+                if (!result) throw new System.Exception();
 
                 return true;
             }
-            catch (Exception)
+            catch (System.Exception)
             {
                 foreach (var v in memoryFavor)
                 {
@@ -66,7 +74,7 @@ namespace Application.Services
                     await _repositReview.Create(v);
                 }
 
-                return false;
+                throw new EntityDeleteException("Something gone wrong");
             }
         }
         public async Task<IEnumerable<UserDto>> ReadAll()
@@ -78,16 +86,23 @@ namespace Application.Services
         public async Task<UserDto?> ReadById(int id)
         {
             var element = await _repositUser.ReadById(id);
-            if (element == null) return null;
+            if (element == null) throw new EntityNotFoundException("User is not found");
 
             var mapElem = _mapper.Map<UserDto>(element);
             return mapElem;
         }
-        public async Task<bool> Update(UserDto element)
+        public async Task<bool> Update(UpdateUserRequest request)
         {
-            var mapElem = _mapper.Map<User>(element);
-            if ( mapElem == null) return false;
-            return await _repositUser.Update(mapElem);
+            var result = await _repositUser.Update(new User()
+            {
+                Id = request.Id,
+                Name = request.Name,
+                PathIcon = request.PathIcon,
+            }
+            );
+
+            if (!result) throw new EntityUpdateException("User is not updated");
+            return true;
         }
     }
 }

@@ -12,9 +12,9 @@ namespace Infrastructure.Repositories
             _connection = connection;
         }
 
-        public async Task<(int, int)> Create(Favorites element)
+        public async Task<(int, int)?> Create(Favorites element)
         {
-            (int, int) favoriteId;
+            (int, int)? favoriteId = null;
             try
             {
                 await _connection.OpenAsync();

@@ -1,4 +1,5 @@
 using Application.Dto;
+using Application.Request;
 using Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,18 +31,17 @@ public class SectionController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Add([FromBody] SectionDto section)
+    public async Task<IActionResult> Add([FromBody] CreateSectionRequest section)
     {
-        var result = await _serviceSection.Create(section);
-        if (result == null) return BadRequest();
-        return Ok(result);
+        if (section == null) return NotFound();
+        return Ok(await _serviceSection.Create(section));
     }
 
     [HttpPut]
-    public async Task<IActionResult> Update([FromBody] SectionDto section)
+    public async Task<IActionResult> Update([FromBody] UpdateSectionRequest section)
     {
-        var result = await _serviceSection.Update(section);
-        return Ok(result);
+        if (section == null) return NotFound();
+        return Ok(await _serviceSection.Update(section));
     }
 
     [HttpDelete]

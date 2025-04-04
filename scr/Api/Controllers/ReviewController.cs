@@ -1,4 +1,5 @@
 using Application.Dto;
+using Application.Request;
 using Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,18 +31,17 @@ public class ReviewController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Add([FromBody] ReviewDto review)
+    public async Task<IActionResult> Add([FromBody] CreateReviewRequest review)
     {
-        var result = await _serviceReview.Create(review);
-        if (result == null) return BadRequest();
-        return Ok(result);
+        if (review == null) return NotFound();
+        return Ok(await _serviceReview.Create(review));
     }
 
     [HttpPut]
-    public async Task<IActionResult> Update([FromBody] ReviewDto review)
+    public async Task<IActionResult> Update([FromBody] UpdateReviewRequest review)
     {
-        var result = await _serviceReview.Update(review);
-        return Ok(result);
+        if (review == null) return NotFound();
+        return Ok(await _serviceReview.Update(review));
     }
 
     [HttpDelete]

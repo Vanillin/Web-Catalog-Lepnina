@@ -11,9 +11,9 @@ namespace Infrastructure.Repositories
         {
             _connection = connection;
         }
-        public async Task<int> Create(Product product)
+        public async Task<int?> Create(Product product)
         {
-            int productId;
+            int? productId = null;
             try
             {
                 await _connection.OpenAsync();

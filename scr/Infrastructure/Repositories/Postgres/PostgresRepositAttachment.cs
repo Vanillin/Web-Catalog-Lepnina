@@ -11,9 +11,9 @@ namespace Infrastructure.Repositories
         {
             _connection = connection;
         }
-        public async Task<int> Create(Attachment attachment)
+        public async Task<int?> Create(Attachment attachment)
         {
-            int attachmentId;
+            int? attachmentId = null;
             try
             {
                 await _connection.OpenAsync();

@@ -8,7 +8,7 @@
         public double Width { get; set; }
         public double Price { get; set; }
         public double Discount { get; set; }
-        public string PathPicture { get; set; }
+        public string PathPicture { get; set; } = null!;
         public int IdSection { get; set; }
     }
 }

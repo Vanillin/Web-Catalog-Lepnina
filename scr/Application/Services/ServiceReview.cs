@@ -1,4 +1,6 @@
 ﻿using Application.Dto;
+using Application.Exception;
+using Application.Request;
 using AutoMapper;
 using Domain.Entities;
 using Infrastructure.Repositories;
@@ -19,20 +21,28 @@ namespace Application.Services
             _mapper = mapper;
         }
 
-        public async Task<int?> Create(ReviewDto element)
+        public async Task<int?> Create(CreateReviewRequest request)
         {
-            var user = await _repositUser.ReadById(element.IdUser);
-            if (user == null) return null;
+            var user = await _repositUser.ReadById(request.IdUser);
+            if (user == null) throw new EntityNotFoundException("User is not found");
 
-            if (element.IdProduct != null)
+            if (request.IdProduct != null)
             {
-                var product = await _repositProduct.ReadById((int)element.IdProduct);
-                if (product == null) return null;
+                var product = await _repositProduct.ReadById((int)request.IdProduct);
+                if (product == null) throw new EntityNotFoundException("Product is not found");
             }
 
-            var mapElem = _mapper.Map<Review>(element);
-            if (mapElem == null) return null;
-            return await _repositReview.Create(mapElem); //id is changed later
+            var result = await _repositReview.Create(new Review()
+            {
+                Message = request.Message,
+                PathPicture = request.PathPicture,
+                IdUser = request.IdUser,
+                IdProduct = request.IdProduct,
+            }
+            );
+
+            if (result == null) throw new EntityCreateException("Review is not create");
+            return result;
         }
         public async Task<bool> Delete(int id)
         {
@@ -47,26 +57,34 @@ namespace Application.Services
         public async Task<ReviewDto?> ReadById(int id)
         {
             var element = await _repositReview.ReadById(id);
-            if (element == null) return null;
+            if (element == null) throw new EntityNotFoundException("Review is not found");
 
             var mapElem = _mapper.Map<ReviewDto>(element);
             return mapElem;
         }
-        public async Task<bool> Update(ReviewDto element)
+        public async Task<bool> Update(UpdateReviewRequest request)
         {
-            var mapElem = _mapper.Map<Review>(element);
-            if (mapElem == null) return false;
+            var user = await _repositUser.ReadById(request.IdUser);
+            if (user == null) throw new EntityNotFoundException("User is not found");
 
-            var user = await _repositUser.ReadById(mapElem.IdUser);
-            if (user == null) return false;
-
-            if (mapElem.IdProduct != null)
+            if (request.IdProduct != null)
             {
-                var product = await _repositProduct.ReadById((int)mapElem.IdProduct);
-                if (product == null) return false;
+                var product = await _repositProduct.ReadById((int)request.IdProduct);
+                if (product == null) throw new EntityNotFoundException("Product is not found");
             }
 
-            return await _repositReview.Update(mapElem);
+            var result = await _repositReview.Update(new Review()
+            {
+                Id = request.Id,
+                Message = request.Message,
+                PathPicture = request.PathPicture,
+                IdUser = request.IdUser,
+                IdProduct = request.IdProduct,
+            }
+            );
+
+            if (!result) throw new EntityUpdateException("Review is not updated");
+            return true;
         }
     }
 }
