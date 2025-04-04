@@ -19,19 +19,22 @@ namespace Application.Services
             _mapper = mapper;
         }
 
-        public async Task<int?> Create(CreateAttachmentRequest element)
+        public async Task<int?> Create(CreateAttachmentRequest request)
         {
-            var product = await _repositProduct.ReadById(element.IdProduct);
-            if (product == null) throw new NotFoundApplicationException("Product is not found");
+            var product = await _repositProduct.ReadById(request.IdProduct);
+            if (product == null) throw new EntityNotFoundException("Product is not found");
 
-            return await _repositAttachment.Create(
+            var result = await _repositAttachment.Create(
                 new Attachment()
                 {
-                    IdProduct = element.IdProduct,
-                    Message = element.Message,
-                    PathPicture = element.PathPicture,
+                    IdProduct = request.IdProduct,
+                    Message = request.Message,
+                    PathPicture = request.PathPicture,
                 }
                 );
+
+            if (result == null) throw new EntityCreateException("Attachment is not create");
+            return result;
         }
         public async Task<bool> Delete(int id)
         {
@@ -46,25 +49,28 @@ namespace Application.Services
         public async Task<AttachmentDto?> ReadById(int id)
         {
             var element = await _repositAttachment.ReadById(id);
-            if (element == null) throw new NotFoundApplicationException("Attachment is not found"); ;
+            if (element == null) throw new EntityNotFoundException("Attachment is not found"); ;
 
             var mapElem = _mapper.Map<AttachmentDto>(element);
             return mapElem;
         }
-        public async Task<bool> Update(UpdateAttachmentRequest element)
+        public async Task<bool> Update(UpdateAttachmentRequest request)
         {
-            var product = await _repositProduct.ReadById(element.IdProduct);
-            if (product == null) throw new NotFoundApplicationException("Product is not found"); ;
+            var product = await _repositProduct.ReadById(request.IdProduct);
+            if (product == null) throw new EntityNotFoundException("Product is not found"); ;
 
-            return await _repositAttachment.Update(
+            var result = await _repositAttachment.Update(
                 new Attachment()
                 {
-                    Id = element.Id,
-                    IdProduct = element.IdProduct,
-                    Message = element.Message,
-                    PathPicture = element.PathPicture,
+                    Id = request.Id,
+                    IdProduct = request.IdProduct,
+                    Message = request.Message,
+                    PathPicture = request.PathPicture,
                 }
                 );
+
+            if (!result) throw new EntityUpdateException("Attachment is not updated");
+            return true;
         }
     }
 }

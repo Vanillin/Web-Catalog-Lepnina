@@ -1,10 +1,11 @@
 ﻿using Application.Exception;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 
 namespace Api.ExceptionHandler
 {
+#pragma warning disable CS9113 // Параметр не прочитан.
+#pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
     public class ApplicationExceptionHandler(IProblemDetailsService _problemDetailsService) : IExceptionHandler
     {
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext
@@ -36,4 +37,6 @@ namespace Api.ExceptionHandler
             return true;
         }
     }
+#pragma warning restore CS9113 // Параметр не прочитан.
+#pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
 }

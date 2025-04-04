@@ -32,9 +32,8 @@ public class FavoritesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] FavoritesDto favorites)
     {
-        var result = await _serviceFavorites.Create(favorites);
-        if (result == null) return BadRequest();
-        return Ok(result);
+        if (favorites == null) return NotFound();
+        return Ok(await _serviceFavorites.Create(favorites));
     }
 
     [HttpDelete("{idUser}/{idProduct}")]

@@ -4,13 +4,14 @@ namespace Application.Request
 {
     public class CreateSectionRequest
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
     public class CreateSectionRequestValidator : AbstractValidator<CreateSectionRequest>
     {
         public CreateSectionRequestValidator()
         {
-            RuleFor(x => x.Name).NotEmpty().MaximumLength(255).WithMessage("Name has 255 max length");
+            RuleFor(x => x.Name).NotEmpty()
+                .MaximumLength(ValidationConstants.MaxNameLen).WithMessage("Name soo length");
         }
     }
 }

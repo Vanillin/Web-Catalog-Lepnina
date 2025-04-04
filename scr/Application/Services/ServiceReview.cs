@@ -21,25 +21,28 @@ namespace Application.Services
             _mapper = mapper;
         }
 
-        public async Task<int?> Create(CreateReviewRequest element)
+        public async Task<int?> Create(CreateReviewRequest request)
         {
-            var user = await _repositUser.ReadById(element.IdUser);
-            if (user == null) throw new NotFoundApplicationException("User is not found");
+            var user = await _repositUser.ReadById(request.IdUser);
+            if (user == null) throw new EntityNotFoundException("User is not found");
 
-            if (element.IdProduct != null)
+            if (request.IdProduct != null)
             {
-                var product = await _repositProduct.ReadById((int)element.IdProduct);
-                if (product == null) throw new NotFoundApplicationException("Product is not found");
+                var product = await _repositProduct.ReadById((int)request.IdProduct);
+                if (product == null) throw new EntityNotFoundException("Product is not found");
             }
 
-            return await _repositReview.Create(new Review()
+            var result = await _repositReview.Create(new Review()
             {
-                Message = element.Message,
-                PathPicture = element.PathPicture,
-                IdUser = element.IdUser,
-                IdProduct = element.IdProduct,
+                Message = request.Message,
+                PathPicture = request.PathPicture,
+                IdUser = request.IdUser,
+                IdProduct = request.IdProduct,
             }
             );
+
+            if (result == null) throw new EntityCreateException("Review is not create");
+            return result;
         }
         public async Task<bool> Delete(int id)
         {
@@ -54,31 +57,34 @@ namespace Application.Services
         public async Task<ReviewDto?> ReadById(int id)
         {
             var element = await _repositReview.ReadById(id);
-            if (element == null) throw new NotFoundApplicationException("Review is not found");
+            if (element == null) throw new EntityNotFoundException("Review is not found");
 
             var mapElem = _mapper.Map<ReviewDto>(element);
             return mapElem;
         }
-        public async Task<bool> Update(UpdateReviewRequest element)
+        public async Task<bool> Update(UpdateReviewRequest request)
         {
-            var user = await _repositUser.ReadById(element.IdUser);
-            if (user == null) throw new NotFoundApplicationException("User is not found");
+            var user = await _repositUser.ReadById(request.IdUser);
+            if (user == null) throw new EntityNotFoundException("User is not found");
 
-            if (element.IdProduct != null)
+            if (request.IdProduct != null)
             {
-                var product = await _repositProduct.ReadById((int)element.IdProduct);
-                if (product == null) throw new NotFoundApplicationException("Product is not found");
+                var product = await _repositProduct.ReadById((int)request.IdProduct);
+                if (product == null) throw new EntityNotFoundException("Product is not found");
             }
 
-            return await _repositReview.Update(new Review()
+            var result = await _repositReview.Update(new Review()
             {
-                Id = element.Id,
-                Message = element.Message,
-                PathPicture = element.PathPicture,
-                IdUser = element.IdUser,
-                IdProduct = element.IdProduct,
+                Id = request.Id,
+                Message = request.Message,
+                PathPicture = request.PathPicture,
+                IdUser = request.IdUser,
+                IdProduct = request.IdProduct,
             }
             );
+
+            if (!result) throw new EntityUpdateException("Review is not updated");
+            return true;
         }
     }
 }

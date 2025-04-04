@@ -21,19 +21,22 @@ namespace Application.Services
             _mapper = mapper;
         }
 
-        public async Task<int?> Create(CreateUserRequest element)
+        public async Task<int?> Create(CreateUserRequest request)
         {
-            return await _repositUser.Create(new User()
+            var result = await _repositUser.Create(new User()
             {
-                Name = element.Name,
-                PathIcon = element.PathIcon,
+                Name = request.Name,
+                PathIcon = request.PathIcon,
             }
             );
+
+            if (result == null) throw new EntityCreateException("User is not create");
+            return result;
         }
         public async Task<bool> Delete(int id) //must be transaction
         {
             UserDto? element = await ReadById(id);
-            if (element == null) throw new NotFoundApplicationException("User is not found");
+            if (element == null) throw new EntityNotFoundException("User is not found");
             List<Favorites> memoryFavor = new List<Favorites>();
             List<Review> memoryReviews = new List<Review>();
 
@@ -71,7 +74,7 @@ namespace Application.Services
                     await _repositReview.Create(v);
                 }
 
-                throw new TransactionApplicationException("Something gone wrong");
+                throw new EntityDeleteException("Something gone wrong");
             }
         }
         public async Task<IEnumerable<UserDto>> ReadAll()
@@ -83,20 +86,23 @@ namespace Application.Services
         public async Task<UserDto?> ReadById(int id)
         {
             var element = await _repositUser.ReadById(id);
-            if (element == null) throw new NotFoundApplicationException("User is not found");
+            if (element == null) throw new EntityNotFoundException("User is not found");
 
             var mapElem = _mapper.Map<UserDto>(element);
             return mapElem;
         }
-        public async Task<bool> Update(UpdateUserRequest element)
+        public async Task<bool> Update(UpdateUserRequest request)
         {
-            return await _repositUser.Update(new User()
+            var result = await _repositUser.Update(new User()
             {
-                Id = element.Id,
-                Name = element.Name,
-                PathIcon = element.PathIcon,
+                Id = request.Id,
+                Name = request.Name,
+                PathIcon = request.PathIcon,
             }
             );
+
+            if (!result) throw new EntityUpdateException("User is not updated");
+            return true;
         }
     }
 }

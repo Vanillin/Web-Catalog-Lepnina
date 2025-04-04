@@ -1,6 +1,4 @@
 ﻿using Domain.Entities;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
@@ -8,7 +6,7 @@ namespace Infrastructure.Repositories
     {
         Task<User?> ReadById(int id);
         Task<IEnumerable<User>> ReadAll();
-        Task<int> Create(User element);
+        Task<int?> Create(User element);
         Task<bool> Update(User element);
         Task<bool> Delete(int id);
     }

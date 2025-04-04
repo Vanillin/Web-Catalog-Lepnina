@@ -19,18 +19,21 @@ namespace Application.Services
             _mapper = mapper;
         }
 
-        public async Task<int?> Create(CreateSectionRequest element)
+        public async Task<int?> Create(CreateSectionRequest request)
         {
-            return await _repositSection.Create(new Section()
+            var result = await _repositSection.Create(new Section()
             {
-                Name = element.Name,
+                Name = request.Name,
             }
             );
+
+            if (result == null) throw new EntityCreateException("Section is not create");
+            return result;
         }
         public async Task<bool> Delete(int id) //must be transaction
         {
             SectionDto? element = await ReadById(id);
-            if (element == null) throw new NotFoundApplicationException("Section is not found");
+            if (element == null) throw new EntityNotFoundException("Section is not found");
             List<Product> memoryProduct = new List<Product>();
 
             try
@@ -55,7 +58,7 @@ namespace Application.Services
                     await _repositProduct.Create(v);
                 }
 
-                throw new TransactionApplicationException("Something gone wrong");
+                throw new EntityDeleteException("Something gone wrong");
             }
         }
         public async Task<IEnumerable<SectionDto>> ReadAll()
@@ -67,19 +70,22 @@ namespace Application.Services
         public async Task<SectionDto?> ReadById(int id)
         {
             var element = await _repositSection.ReadById(id);
-            if (element == null) throw new NotFoundApplicationException("Section is not found");
+            if (element == null) throw new EntityNotFoundException("Section is not found");
 
             var mapElem = _mapper.Map<SectionDto>(element);
             return mapElem;
         }
-        public async Task<bool> Update(UpdateSectionRequest element)
+        public async Task<bool> Update(UpdateSectionRequest request)
         {
-            return await _repositSection.Update(new Section()
+            var result = await _repositSection.Update(new Section()
             {
-                Id = element.Id,
-                Name = element.Name,
+                Id = request.Id,
+                Name = request.Name,
             }
             );
+
+            if (!result) throw new EntityUpdateException("Section is not updated");
+            return true;
         }
     }
 }

@@ -33,16 +33,15 @@ public class AttachmentController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] CreateAttachmentRequest attachment)
     {
-        var result = await _serviceAttachment.Create(attachment);
-        if (result == null) return BadRequest();
-        return Ok(result);
+        if (attachment == null) return NotFound();
+        return Ok(await _serviceAttachment.Create(attachment));
     }
 
     [HttpPut]
     public async Task<IActionResult> Update([FromBody] UpdateAttachmentRequest attachment)
     {
-        var result = await _serviceAttachment.Update(attachment);
-        return Ok(result);
+        if (attachment == null) return NotFound();
+        return Ok(await _serviceAttachment.Update(attachment));
     }
 
     [HttpDelete]

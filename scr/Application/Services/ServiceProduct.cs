@@ -26,28 +26,31 @@ namespace Application.Services
             _mapper = mapper;
         }
 
-        public async Task<int?> Create(CreateProductRequest element)
+        public async Task<int?> Create(CreateProductRequest request)
         {
-            var section = await _repositSection.ReadById(element.IdSection);
-            if (section == null) throw new NotFoundApplicationException("Section is not found");
+            var section = await _repositSection.ReadById(request.IdSection);
+            if (section == null) throw new EntityNotFoundException("Section is not found");
 
-            return await _repositProduct.Create(
+            var result = await _repositProduct.Create(
                 new Product()
                 {
-                    IdSection = element.IdSection,
-                    Length = element.Length,
-                    Height = element.Height,
-                    Width = element.Width,
-                    Price = element.Price,
-                    Discount = element.Discount,
-                    PathPicture = element.PathPicture
+                    IdSection = request.IdSection,
+                    Length = request.Length,
+                    Height = request.Height,
+                    Width = request.Width,
+                    Price = request.Price,
+                    Discount = request.Discount,
+                    PathPicture = request.PathPicture
                 }
                 );
+
+            if (result == null) throw new EntityCreateException("Product is not create");
+            return result;
         }
         public async Task<bool> Delete(int id) //must be transaction
         {
             ProductDto? element = await ReadById(id);
-            if (element == null) throw new NotFoundApplicationException("Product is not found");
+            if (element == null) throw new EntityNotFoundException("Product is not found");
             List<Favorites> memoryFavor = new List<Favorites>();
             List<Review> memoryReviews = new List<Review>();
             List<Attachment> memoryAttach = new List<Attachment>();
@@ -98,7 +101,7 @@ namespace Application.Services
                     await _repositAttachment.Create(v);
                 }
 
-                throw new TransactionApplicationException("Something gone wrong");
+                throw new EntityDeleteException("Something gone wrong");
             }
         }
         public async Task<IEnumerable<ProductDto>> ReadAll()
@@ -110,29 +113,32 @@ namespace Application.Services
         public async Task<ProductDto?> ReadById(int id)
         {
             var element = await _repositProduct.ReadById(id);
-            if (element == null) throw new NotFoundApplicationException("Product is not found");
+            if (element == null) throw new EntityNotFoundException("Product is not found");
 
             var mapElem = _mapper.Map<ProductDto>(element);
             return mapElem;
         }
-        public async Task<bool> Update(UpdateProductRequest element)
+        public async Task<bool> Update(UpdateProductRequest request)
         {
-            var section = await _repositSection.ReadById(element.IdSection);
-            if (section == null) throw new NotFoundApplicationException("Section is not found");
+            var section = await _repositSection.ReadById(request.IdSection);
+            if (section == null) throw new EntityNotFoundException("Section is not found");
 
-            return await _repositProduct.Update(
+            var result = await _repositProduct.Update(
                 new Product()
                 {
-                    Id = element.Id,
-                    IdSection = element.IdSection,
-                    Length = element.Length,
-                    Height = element.Height,
-                    Width = element.Width,
-                    Price = element.Price,
-                    Discount = element.Discount,
-                    PathPicture = element.PathPicture
+                    Id = request.Id,
+                    IdSection = request.IdSection,
+                    Length = request.Length,
+                    Height = request.Height,
+                    Width = request.Width,
+                    Price = request.Price,
+                    Discount = request.Discount,
+                    PathPicture = request.PathPicture
                 }
                 );
+
+            if (!result) throw new EntityUpdateException("Product is not updated");
+            return true;
         }
     }
 }
