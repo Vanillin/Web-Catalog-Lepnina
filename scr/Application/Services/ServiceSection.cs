@@ -4,6 +4,7 @@ using Application.Request;
 using AutoMapper;
 using Domain.Entities;
 using Infrastructure.Repositories;
+using Npgsql;
 
 namespace Application.Services
 {
@@ -12,11 +13,13 @@ namespace Application.Services
         private IRepositSection _repositSection;
         private IRepositProduct _repositProduct;
         private IMapper _mapper;
-        public ServiceSection(IRepositSection repositSection, IRepositProduct repositProduct, IMapper mapper)
+        private NpgsqlConnection _connection;
+        public ServiceSection(IRepositSection repositSection, IRepositProduct repositProduct, IMapper mapper, NpgsqlConnection connection)
         {
             _repositSection = repositSection;
             _repositProduct = repositProduct;
             _mapper = mapper;
+            _connection = connection;
         }
 
         public async Task<int?> Create(CreateSectionRequest request)
@@ -30,35 +33,42 @@ namespace Application.Services
             if (result == null) throw new EntityCreateException("Section is not create");
             return result;
         }
-        public async Task<bool> Delete(int id) //must be transaction
+        public async Task<bool> Delete(int id)
         {
             SectionDto? element = await ReadById(id);
             if (element == null) throw new EntityNotFoundException("Section is not found");
-            List<Product> memoryProduct = new List<Product>();
 
-            try
+            using (_connection)
             {
-                var products = _repositProduct.ReadAll().Result.Where(x => x.IdSection == id).ToList();
-                foreach (var v in products)
+                await _connection.OpenAsync();
+
+                using (var tran = _connection.BeginTransaction())
                 {
-                    var resultProduct = await _repositProduct.Delete(v.Id);
-                    if (!resultProduct) throw new System.Exception();
-                    memoryProduct.Add(v);
+                    try
+                    {
+                        var products = _repositProduct.ReadAll().Result.Where(x => x.IdSection == id).ToList();
+                        foreach (var v in products)
+                        {
+                            var resultProduct = await _repositProduct.Delete(v.Id);
+                            if (!resultProduct) throw new System.Exception();
+                        }
+
+                        var result = await _repositSection.Delete(id);
+                        if (!result) throw new System.Exception();
+
+                        tran.Commit();
+                        return true;
+                    }
+                    catch (System.Exception)
+                    {
+                        tran.Rollback();
+                        return false;
+                    }
+                    finally
+                    {
+                        await _connection.CloseAsync();
+                    }
                 }
-
-                var result = await _repositSection.Delete(id);
-                if (!result) throw new System.Exception();
-
-                return true;
-            }
-            catch (System.Exception)
-            {
-                foreach (var v in memoryProduct)
-                {
-                    await _repositProduct.Create(v);
-                }
-
-                throw new EntityDeleteException("Something gone wrong");
             }
         }
         public async Task<IEnumerable<SectionDto>> ReadAll()

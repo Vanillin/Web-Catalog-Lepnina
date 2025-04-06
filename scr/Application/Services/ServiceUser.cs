@@ -4,6 +4,7 @@ using Application.Request;
 using AutoMapper;
 using Domain.Entities;
 using Infrastructure.Repositories;
+using Npgsql;
 
 namespace Application.Services
 {
@@ -13,12 +14,14 @@ namespace Application.Services
         private IRepositReview _repositReview;
         private IRepositFavorites _repositFavorites;
         private IMapper _mapper;
-        public ServiceUser(IRepositUser repositUser, IRepositReview repositReview, IRepositFavorites repositFavorites, IMapper mapper)
+        private NpgsqlConnection _connection;
+        public ServiceUser(IRepositUser repositUser, IRepositReview repositReview, IRepositFavorites repositFavorites, IMapper mapper, NpgsqlConnection connection)
         {
             _repositUser = repositUser;
             _repositReview = repositReview;
             _repositFavorites = repositFavorites;
             _mapper = mapper;
+            _connection = connection;
         }
 
         public async Task<int?> Create(CreateUserRequest request)
@@ -33,48 +36,49 @@ namespace Application.Services
             if (result == null) throw new EntityCreateException("User is not create");
             return result;
         }
-        public async Task<bool> Delete(int id) //must be transaction
+        public async Task<bool> Delete(int id)
         {
             UserDto? element = await ReadById(id);
             if (element == null) throw new EntityNotFoundException("User is not found");
-            List<Favorites> memoryFavor = new List<Favorites>();
-            List<Review> memoryReviews = new List<Review>();
 
-            try
+            using (_connection)
             {
-                var favorites = _repositFavorites.ReadAll().Result.Where(x => x.IdUser == id).ToList();
-                foreach (var v in favorites)
-                {
-                    var resultFavourite = await _repositFavorites.Delete(v.IdUser, v.IdProduct);
-                    if (!resultFavourite) throw new System.Exception();
-                    memoryFavor.Add(v);
-                }
+                await _connection.OpenAsync();
 
-                var reviews = _repositReview.ReadAll().Result.Where(x => x.IdUser == id).ToList();
-                foreach (var v in reviews)
+                using (var tran = _connection.BeginTransaction())
                 {
-                    var resultReview = await _repositReview.Delete(v.Id);
-                    if (!resultReview) throw new System.Exception();
-                    memoryReviews.Add(v);
-                }
+                    try
+                    {
+                        var favorites = _repositFavorites.ReadAll().Result.Where(x => x.IdUser == id).ToList();
+                        foreach (var v in favorites)
+                        {
+                            var resultFavourite = await _repositFavorites.Delete(v.IdUser, v.IdProduct);
+                            if (!resultFavourite) throw new System.Exception();
+                        }
 
-                var result = await _repositUser.Delete(id);
-                if (!result) throw new System.Exception();
+                        var reviews = _repositReview.ReadAll().Result.Where(x => x.IdUser == id).ToList();
+                        foreach (var v in reviews)
+                        {
+                            var resultReview = await _repositReview.Delete(v.Id);
+                            if (!resultReview) throw new System.Exception();
+                        }
 
-                return true;
-            }
-            catch (System.Exception)
-            {
-                foreach (var v in memoryFavor)
-                {
-                    await _repositFavorites.Create(v);
-                }
-                foreach (var v in memoryReviews)
-                {
-                    await _repositReview.Create(v);
-                }
+                        var result = await _repositUser.Delete(id);
+                        if (!result) throw new System.Exception();
 
-                throw new EntityDeleteException("Something gone wrong");
+                        tran.Commit();
+                        return true;
+                    }
+                    catch (System.Exception)
+                    {
+                        tran.Rollback();
+                        return false;
+                    }
+                    finally
+                    {
+                        await _connection.CloseAsync();
+                    }
+                }
             }
         }
         public async Task<IEnumerable<UserDto>> ReadAll()
