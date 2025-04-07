@@ -23,15 +23,6 @@ namespace Application.Services
 
         public async Task<int?> Create(CreateReviewRequest request)
         {
-            var user = await _repositUser.ReadById(request.IdUser);
-            if (user == null) throw new EntityNotFoundException("User is not found");
-
-            if (request.IdProduct != null)
-            {
-                var product = await _repositProduct.ReadById((int)request.IdProduct);
-                if (product == null) throw new EntityNotFoundException("Product is not found");
-            }
-
             var result = await _repositReview.Create(new Review()
             {
                 Message = request.Message,
@@ -41,7 +32,7 @@ namespace Application.Services
             }
             );
 
-            if (result == null) throw new EntityCreateException("Review is not create");
+            if (result == null) throw new EntityCreateException("Review is not created");
             return result;
         }
         public async Task<bool> Delete(int id)
@@ -64,24 +55,15 @@ namespace Application.Services
         }
         public async Task<bool> Update(UpdateReviewRequest request)
         {
-            var user = await _repositUser.ReadById(request.IdUser);
-            if (user == null) throw new EntityNotFoundException("User is not found");
+            var element = await _repositReview.ReadById(request.Id);
+            if (element == null) throw new EntityNotFoundException("Review is not found");
 
-            if (request.IdProduct != null)
-            {
-                var product = await _repositProduct.ReadById((int)request.IdProduct);
-                if (product == null) throw new EntityNotFoundException("Product is not found");
-            }
+            element.Message = request.Message;
+            element.PathPicture = request.PathPicture;
+            element.IdUser = request.IdUser;
+            element.IdProduct = request.IdProduct;
 
-            var result = await _repositReview.Update(new Review()
-            {
-                Id = request.Id,
-                Message = request.Message,
-                PathPicture = request.PathPicture,
-                IdUser = request.IdUser,
-                IdProduct = request.IdProduct,
-            }
-            );
+            var result = await _repositReview.Update(element);
 
             if (!result) throw new EntityUpdateException("Review is not updated");
             return true;

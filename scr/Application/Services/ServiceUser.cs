@@ -33,51 +33,45 @@ namespace Application.Services
             }
             );
 
-            if (result == null) throw new EntityCreateException("User is not create");
+            if (result == null) throw new EntityCreateException("User is not created");
             return result;
         }
         public async Task<bool> Delete(int id)
         {
-            UserDto? element = await ReadById(id);
-            if (element == null) throw new EntityNotFoundException("User is not found");
+            await _connection.OpenAsync();
 
-            using (_connection)
+            await using (var tran = _connection.BeginTransaction())
             {
-                await _connection.OpenAsync();
-
-                using (var tran = _connection.BeginTransaction())
+                try
                 {
-                    try
+                    var favorites = _repositFavorites.ReadAll().Result.Where(x => x.IdUser == id).ToList();
+                    foreach (var v in favorites)
                     {
-                        var favorites = _repositFavorites.ReadAll().Result.Where(x => x.IdUser == id).ToList();
-                        foreach (var v in favorites)
-                        {
-                            var resultFavourite = await _repositFavorites.Delete(v.IdUser, v.IdProduct);
-                            if (!resultFavourite) throw new System.Exception();
-                        }
-
-                        var reviews = _repositReview.ReadAll().Result.Where(x => x.IdUser == id).ToList();
-                        foreach (var v in reviews)
-                        {
-                            var resultReview = await _repositReview.Delete(v.Id);
-                            if (!resultReview) throw new System.Exception();
-                        }
-
-                        var result = await _repositUser.Delete(id);
-                        if (!result) throw new System.Exception();
-
-                        tran.Commit();
-                        return true;
+                        var resultFavourite = await _repositFavorites.Delete(v.IdUser, v.IdProduct);
+                        if (!resultFavourite) throw new EntityDeleteException("Favorite is not deleted");
                     }
-                    catch (System.Exception)
+
+                    var reviews = _repositReview.ReadAll().Result.Where(x => x.IdUser == id).ToList();
+                    foreach (var v in reviews)
                     {
-                        tran.Rollback();
-                        return false;
+                        var resultReview = await _repositReview.Delete(v.Id);
+                        if (!resultReview) throw new EntityDeleteException("Review is not deleted");
                     }
-                    finally
-                    {
-                        await _connection.CloseAsync();
-                    }
+
+                    var result = await _repositUser.Delete(id);
+                    if (!result) throw new EntityDeleteException("User is not deleted");
+
+                    tran.Commit();
+                    return true;
+                }
+                catch (BaseApplicationException)
+                {
+                    tran.Rollback();
+                    return false;
+                }
+                finally
+                {
+                    await _connection.CloseAsync();
                 }
             }
         }
@@ -97,13 +91,13 @@ namespace Application.Services
         }
         public async Task<bool> Update(UpdateUserRequest request)
         {
-            var result = await _repositUser.Update(new User()
-            {
-                Id = request.Id,
-                Name = request.Name,
-                PathIcon = request.PathIcon,
-            }
-            );
+            var element = await _repositUser.ReadById(request.Id);
+            if (element == null) throw new EntityNotFoundException("User is not found");
+
+            element.Name = request.Name;
+            element.PathIcon = request.PathIcon;
+
+            var result = await _repositUser.Update(element);
 
             if (!result) throw new EntityUpdateException("User is not updated");
             return true;

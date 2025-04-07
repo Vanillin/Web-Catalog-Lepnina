@@ -11,7 +11,7 @@ namespace Application.Request
         public CreateSectionRequestValidator()
         {
             RuleFor(x => x.Name).NotEmpty()
-                .MaximumLength(ValidationConstants.MaxNameLen).WithMessage("Name soo length");
+                .MaximumLength(ValidationConstants.MaxNameLenght).WithMessage("Name is too long");
         }
     }
 }

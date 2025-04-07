@@ -13,9 +13,9 @@ namespace Application.Request
         public CreateAttachmentRequestValidator()
         {
             RuleFor(x => x.Message)
-                .MaximumLength(ValidationConstants.MaxMessageLen).WithMessage("Message soo length");
+                .MaximumLength(ValidationConstants.MaxMessageLenght).WithMessage("Message is too long");
             RuleFor(x => x.PathPicture).NotEmpty()
-                .MaximumLength(ValidationConstants.MaxPathPictLen).WithMessage("PathPicture soo length");
+                .MaximumLength(ValidationConstants.MaxPathPictureLenght).WithMessage("PathPicture is too long");
             RuleFor(x => x.IdProduct).NotEmpty()
                 .InclusiveBetween(1, int.MaxValue);
         }

@@ -4,7 +4,6 @@ using Application.Request;
 using AutoMapper;
 using Domain.Entities;
 using Infrastructure.Repositories;
-using Microsoft.Data.SqlClient;
 using Npgsql;
 
 namespace Application.Services
@@ -32,9 +31,6 @@ namespace Application.Services
 
         public async Task<int?> Create(CreateProductRequest request)
         {
-            var section = await _repositSection.ReadById(request.IdSection);
-            if (section == null) throw new EntityNotFoundException("Section is not found");
-
             var result = await _repositProduct.Create(
                 new Product()
                 {
@@ -48,58 +44,53 @@ namespace Application.Services
                 }
                 );
 
-            if (result == null) throw new EntityCreateException("Product is not create");
+            if (result == null) throw new EntityCreateException("Product is not created");
             return result;
         }
         public async Task<bool> Delete(int id)
         {
-            ProductDto? element = await ReadById(id);
-            if (element == null) throw new EntityNotFoundException("Product is not found");
+            await _connection.OpenAsync();
 
-            using (_connection)
+            await using (var tran = _connection.BeginTransaction())
             {
-                await _connection.OpenAsync();
-
-                using (var tran = _connection.BeginTransaction())
+                try
                 {
-                    try
+                    var favorites = _repositFavorites.ReadAll().Result.Where(x => x.IdProduct == id).ToList();
+                    foreach (var v in favorites)
                     {
-                        var favorites = _repositFavorites.ReadAll().Result.Where(x => x.IdProduct == id).ToList();
-                        foreach (var v in favorites)
-                        {
-                            var resultFavourite = await _repositFavorites.Delete(v.IdUser, v.IdProduct);
-                            if (!resultFavourite) throw new System.Exception();
-                        }
-
-                        var reviews = _repositReview.ReadAll().Result.Where(x => x.IdProduct == id).ToList();
-                        foreach (var v in reviews)
-                        {
-                            var resultReview = await _repositReview.Update(new Review() { Id = v.Id, IdProduct = null, IdUser = v.IdUser, Message = v.Message, PathPicture = v.PathPicture });
-                            if (!resultReview) throw new System.Exception();
-                        }
-
-                        var attachments = _repositAttachment.ReadAll().Result.Where(x => x.IdProduct == id).ToList();
-                        foreach (var v in attachments)
-                        {
-                            var resultAttach = await _repositAttachment.Delete(v.Id);
-                            if (!resultAttach) throw new System.Exception();
-                        }
-
-                        var result = await _repositProduct.Delete(id);
-                        if (!result) throw new System.Exception();
-
-                        tran.Commit();
-                        return true;
+                        var resultFavourite = await _repositFavorites.Delete(v.IdUser, v.IdProduct);
+                        if (!resultFavourite) throw new EntityDeleteException("Favorite is not deleted");
                     }
-                    catch (System.Exception)
+
+                    var reviews = _repositReview.ReadAll().Result.Where(x => x.IdProduct == id).ToList();
+                    foreach (var v in reviews)
                     {
-                        tran.Rollback();
-                        return false;
+                        v.IdProduct = null;
+                        var resultReview = await _repositReview.Update(v);
+                        if (!resultReview) throw new EntityUpdateException("Review is not updated");
                     }
-                    finally
+
+                    var attachments = _repositAttachment.ReadAll().Result.Where(x => x.IdProduct == id).ToList();
+                    foreach (var v in attachments)
                     {
-                        await _connection.CloseAsync();
+                        var resultAttach = await _repositAttachment.Delete(v.Id);
+                        if (!resultAttach) throw new EntityDeleteException("Attachment is not deleted");
                     }
+
+                    var result = await _repositProduct.Delete(id);
+                    if (!result) throw new EntityDeleteException("Product is not deleted");
+
+                    tran.Commit();
+                    return true;
+                }
+                catch (BaseApplicationException)
+                {
+                    tran.Rollback();
+                    return false;
+                }
+                finally
+                {
+                    await _connection.CloseAsync();
                 }
             }
         }
@@ -119,22 +110,18 @@ namespace Application.Services
         }
         public async Task<bool> Update(UpdateProductRequest request)
         {
-            var section = await _repositSection.ReadById(request.IdSection);
-            if (section == null) throw new EntityNotFoundException("Section is not found");
+            var element = await _repositProduct.ReadById(request.Id);
+            if (element == null) throw new EntityNotFoundException("Product is not found");
 
-            var result = await _repositProduct.Update(
-                new Product()
-                {
-                    Id = request.Id,
-                    IdSection = request.IdSection,
-                    Length = request.Length,
-                    Height = request.Height,
-                    Width = request.Width,
-                    Price = request.Price,
-                    Discount = request.Discount,
-                    PathPicture = request.PathPicture
-                }
-                );
+            element.IdSection = request.IdSection;
+            element.Length = request.Length;
+            element.Height = request.Height;
+            element.Width = request.Width;
+            element.Price = request.Price;
+            element.Discount = request.Discount;
+            element.PathPicture = request.PathPicture;
+
+            var result = await _repositProduct.Update(element);
 
             if (!result) throw new EntityUpdateException("Product is not updated");
             return true;

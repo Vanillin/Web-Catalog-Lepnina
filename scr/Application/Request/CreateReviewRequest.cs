@@ -14,9 +14,9 @@ namespace Application.Request
         public CreateReviewRequestValidator()
         {
             RuleFor(x => x.Message).NotEmpty()
-                .MaximumLength(ValidationConstants.MaxMessageLen).WithMessage("Message soo length");
+                .MaximumLength(ValidationConstants.MaxMessageLenght).WithMessage("Message is too long");
             RuleFor(x => x.PathPicture)
-                .MaximumLength(ValidationConstants.MaxPathPictLen).WithMessage("PathPicture soo length");
+                .MaximumLength(ValidationConstants.MaxPathPictureLenght).WithMessage("PathPicture is too long");
             RuleFor(x => x.IdUser).NotEmpty()
                 .InclusiveBetween(1, int.MaxValue);
             RuleFor(x => x.IdProduct)

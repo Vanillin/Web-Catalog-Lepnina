@@ -30,7 +30,7 @@ namespace Application.Request
             RuleFor(x => x.Discount)
                 .InclusiveBetween(0, 1).WithMessage("Discount must be more/equals 0 and less/equals 1");
             RuleFor(x => x.PathPicture).NotEmpty()
-                .MaximumLength(ValidationConstants.MaxPathPictLen).WithMessage("PathPicture soo length");
+                .MaximumLength(ValidationConstants.MaxPathPictureLenght).WithMessage("PathPicture is too long");
             RuleFor(x => x.IdSection).NotEmpty()
                  .InclusiveBetween(1, int.MaxValue);
         }

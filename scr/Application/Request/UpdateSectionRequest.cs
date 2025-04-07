@@ -14,7 +14,7 @@ namespace Application.Request
             RuleFor(x => x.Id).NotEmpty()
                 .InclusiveBetween(1, int.MaxValue);
             RuleFor(x => x.Name).NotEmpty()
-                .MaximumLength(ValidationConstants.MaxNameLen).WithMessage("Name soo length");
+                .MaximumLength(ValidationConstants.MaxNameLenght).WithMessage("Name is too long");
         }
     }
 }

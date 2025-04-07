@@ -18,36 +18,30 @@ public class AttachmentController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetByIdAsync(int id)
     {
-        var result = await _serviceAttachment.ReadById(id);
-        if (result == null) return NotFound();
-        return Ok(result);
+        return Ok(await _serviceAttachment.ReadById(id));
     }
 
     [HttpGet("all")]
     public async Task<IActionResult> GetAll()
     {
-        var result = await _serviceAttachment.ReadAll();
-        return Ok(result);
+        return Ok(await _serviceAttachment.ReadAll());
     }
 
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] CreateAttachmentRequest attachment)
     {
-        if (attachment == null) return NotFound();
         return Ok(await _serviceAttachment.Create(attachment));
     }
 
     [HttpPut]
     public async Task<IActionResult> Update([FromBody] UpdateAttachmentRequest attachment)
     {
-        if (attachment == null) return NotFound();
         return Ok(await _serviceAttachment.Update(attachment));
     }
 
     [HttpDelete]
     public async Task<IActionResult> Delete([FromQuery] int id)
     {
-        var result = await _serviceAttachment.Delete(id);
-        return Ok(result);
+        return Ok(await _serviceAttachment.Delete(id));
     }
 }

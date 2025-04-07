@@ -22,7 +22,7 @@ namespace Infrastructure.Repositories
                 favoriteId = await _connection.QuerySingleAsync<(int, int)>(@"
                     INSERT INTO favorites (id_user, id_product)
                     VALUES (@IdUser, @IdProduct)
-                    RETURNING iduser, idproduct"
+                    RETURNING id_user, id_product"
                 , element);
             }
             finally

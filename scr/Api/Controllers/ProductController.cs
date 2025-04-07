@@ -18,36 +18,30 @@ public class ProductController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetByIdAsync(int id)
     {
-        var result = await _serviceProduct.ReadById(id);
-        if (result == null) return NotFound();
-        return Ok(result);
+        return Ok(await _serviceProduct.ReadById(id));
     }
 
     [HttpGet("all")]
     public async Task<IActionResult> GetAll()
     {
-        var result = await _serviceProduct.ReadAll();
-        return Ok(result);
+        return Ok(await _serviceProduct.ReadAll());
     }
 
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] CreateProductRequest product)
     {
-        if (product == null) return NotFound();
         return Ok(await _serviceProduct.Create(product));
     }
 
     [HttpPut]
     public async Task<IActionResult> Update([FromBody] UpdateProductRequest product)
     {
-        if (product == null) return NotFound();
         return Ok(await _serviceProduct.Update(product));
     }
 
     [HttpDelete]
     public async Task<IActionResult> Delete([FromQuery] int id)
     {
-        var result = await _serviceProduct.Delete(id);
-        return Ok(result);
+        return Ok(await _serviceProduct.Delete(id));
     }
 }

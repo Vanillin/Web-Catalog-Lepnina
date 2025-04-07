@@ -21,9 +21,6 @@ namespace Application.Services
 
         public async Task<int?> Create(CreateAttachmentRequest request)
         {
-            var product = await _repositProduct.ReadById(request.IdProduct);
-            if (product == null) throw new EntityNotFoundException("Product is not found");
-
             var result = await _repositAttachment.Create(
                 new Attachment()
                 {
@@ -33,7 +30,7 @@ namespace Application.Services
                 }
                 );
 
-            if (result == null) throw new EntityCreateException("Attachment is not create");
+            if (result == null) throw new EntityCreateException("Attachment is not created");
             return result;
         }
         public async Task<bool> Delete(int id)
@@ -56,18 +53,14 @@ namespace Application.Services
         }
         public async Task<bool> Update(UpdateAttachmentRequest request)
         {
-            var product = await _repositProduct.ReadById(request.IdProduct);
-            if (product == null) throw new EntityNotFoundException("Product is not found"); ;
+            var element = await _repositAttachment.ReadById(request.Id);
+            if (element == null) throw new EntityNotFoundException("Attachment is not found");
 
-            var result = await _repositAttachment.Update(
-                new Attachment()
-                {
-                    Id = request.Id,
-                    IdProduct = request.IdProduct,
-                    Message = request.Message,
-                    PathPicture = request.PathPicture,
-                }
-                );
+            element.IdProduct = request.IdProduct;
+            element.Message = request.Message;
+            element.PathPicture = request.PathPicture;
+
+            var result = await _repositAttachment.Update(element);
 
             if (!result) throw new EntityUpdateException("Attachment is not updated");
             return true;

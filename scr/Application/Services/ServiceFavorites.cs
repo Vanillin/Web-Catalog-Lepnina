@@ -25,21 +25,10 @@ namespace Application.Services
             var mapElem = _mapper.Map<Favorites>(element);
             if (mapElem == null) throw new MappingApplicationException("Create element is not correct");
 
-            var user = await _repositUser.ReadById(mapElem.IdUser);
-            if (user == null) throw new EntityNotFoundException("User is not found");
+            var result = await _repositFavorites.Create(mapElem);
 
-            var product = await _repositProduct.ReadById(mapElem.IdProduct);
-            if (product == null) throw new EntityNotFoundException("Product is not found");
-
-            FavoritesDto? id = await ReadById(element.IdUser, element.IdProduct);
-            if (id == null)
-            {
-                var result = await _repositFavorites.Create(mapElem);
-
-                if (result == null) throw new EntityCreateException("Favorite is not create");
-                return result;
-            }                
-            else throw new EntityExistException("Favorite already exists");
+            if (result == null) throw new EntityCreateException("Favorite is not created");
+            return result;
         }
         public async Task<bool> Delete(int idUser, int idProduct)
         {

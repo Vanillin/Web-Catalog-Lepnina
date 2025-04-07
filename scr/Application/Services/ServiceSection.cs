@@ -30,44 +30,38 @@ namespace Application.Services
             }
             );
 
-            if (result == null) throw new EntityCreateException("Section is not create");
+            if (result == null) throw new EntityCreateException("Section is not created");
             return result;
         }
         public async Task<bool> Delete(int id)
         {
-            SectionDto? element = await ReadById(id);
-            if (element == null) throw new EntityNotFoundException("Section is not found");
+            await _connection.OpenAsync();
 
-            using (_connection)
+            await using (var tran = _connection.BeginTransaction())
             {
-                await _connection.OpenAsync();
-
-                using (var tran = _connection.BeginTransaction())
+                try
                 {
-                    try
+                    var products = _repositProduct.ReadAll().Result.Where(x => x.IdSection == id).ToList();
+                    foreach (var v in products)
                     {
-                        var products = _repositProduct.ReadAll().Result.Where(x => x.IdSection == id).ToList();
-                        foreach (var v in products)
-                        {
-                            var resultProduct = await _repositProduct.Delete(v.Id);
-                            if (!resultProduct) throw new System.Exception();
-                        }
+                        var resultProduct = await _repositProduct.Delete(v.Id);
+                        if (!resultProduct) throw new EntityDeleteException("Product is not deleted");
+                    }
 
-                        var result = await _repositSection.Delete(id);
-                        if (!result) throw new System.Exception();
+                    var result = await _repositSection.Delete(id);
+                    if (!result) throw new EntityDeleteException("Section is not deleted");
 
-                        tran.Commit();
-                        return true;
-                    }
-                    catch (System.Exception)
-                    {
-                        tran.Rollback();
-                        return false;
-                    }
-                    finally
-                    {
-                        await _connection.CloseAsync();
-                    }
+                    tran.Commit();
+                    return true;
+                }
+                catch (BaseApplicationException)
+                {
+                    tran.Rollback();
+                    return false;
+                }
+                finally
+                {
+                    await _connection.CloseAsync();
                 }
             }
         }
@@ -87,12 +81,12 @@ namespace Application.Services
         }
         public async Task<bool> Update(UpdateSectionRequest request)
         {
-            var result = await _repositSection.Update(new Section()
-            {
-                Id = request.Id,
-                Name = request.Name,
-            }
-            );
+            var element = await _repositSection.ReadById(request.Id);
+            if (element == null) throw new EntityNotFoundException("Section is not found");
+
+            element.Name = request.Name;
+
+            var result = await _repositSection.Update(element);
 
             if (!result) throw new EntityUpdateException("Section is not updated");
             return true;

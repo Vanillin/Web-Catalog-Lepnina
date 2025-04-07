@@ -2,8 +2,8 @@
 {
     public class ValidationConstants
     {
-        public static int MaxMessageLen = 255;
-        public static int MaxPathPictLen = 255;
-        public static int MaxNameLen = 255;
+        public static int MaxMessageLenght = 255;
+        public static int MaxPathPictureLenght = 255;
+        public static int MaxNameLenght = 255;
     }
 }
