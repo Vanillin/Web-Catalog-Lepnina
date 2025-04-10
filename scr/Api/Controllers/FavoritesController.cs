@@ -17,30 +17,24 @@ public class FavoritesController : ControllerBase
     [HttpGet("{idUser}/{idProduct}")]
     public async Task<IActionResult> GetByIdAsync(int idUser, int idProduct)
     {
-        var result = await _serviceFavorites.ReadById(idUser, idProduct);
-        if (result == null) return NotFound();
-        return Ok(result);
+        return Ok(await _serviceFavorites.ReadById(idUser, idProduct));
     }
 
     [HttpGet("all")]
     public async Task<IActionResult> GetAll()
     {
-        var result = await _serviceFavorites.ReadAll();
-        return Ok(result);
+        return Ok(await _serviceFavorites.ReadAll());
     }
 
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] FavoritesDto favorites)
     {
-        var result = await _serviceFavorites.Create(favorites);
-        if (result == null) return BadRequest();
-        return Ok(result);
+        return Ok(await _serviceFavorites.Create(favorites));
     }
 
     [HttpDelete("{idUser}/{idProduct}")]
     public async Task<IActionResult> Delete(int idUser, int idProduct)
     {
-        var result = await _serviceFavorites.Delete(idUser, idProduct);
-        return Ok(result);
+        return Ok(await _serviceFavorites.Delete(idUser, idProduct));
     }
 }

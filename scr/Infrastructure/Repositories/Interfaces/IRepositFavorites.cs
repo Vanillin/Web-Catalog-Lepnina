@@ -1,6 +1,4 @@
 ﻿using Domain.Entities;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
@@ -8,7 +6,7 @@ namespace Infrastructure.Repositories
     {
         Task<Favorites?> ReadById(int idUser, int idProduct);
         Task<IEnumerable<Favorites>> ReadAll();
-        Task<(int, int)> Create(Favorites element);
+        Task<(int, int)?> Create(Favorites element);
         Task<bool> Delete(int idUser, int idProduct);
     }
 }
