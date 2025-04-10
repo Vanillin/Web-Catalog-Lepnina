@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.ExceptionHandler
 {
-#pragma warning disable CS9113 // Параметр не прочитан.
-#pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
     public class ApplicationExceptionHandler(IProblemDetailsService _problemDetailsService) : IExceptionHandler
     {
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext
@@ -26,17 +24,15 @@ namespace Api.ExceptionHandler
                 Type = e.GetType().Name
             };
 
-            var problemDetailContext = new ProblemDetailsContext
+            var problemDetailsContext = new ProblemDetailsContext
             {
                 HttpContext = httpContext,
                 ProblemDetails = problemDetails,
                 Exception = e
             };
 
-
+            await _problemDetailsService.WriteAsync(problemDetailsContext);
             return true;
         }
     }
-#pragma warning restore CS9113 // Параметр не прочитан.
-#pragma warning restore CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
 }
