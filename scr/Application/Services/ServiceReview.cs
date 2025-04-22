@@ -4,21 +4,20 @@ using Application.Request;
 using AutoMapper;
 using Domain.Entities;
 using Infrastructure.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Services
 {
     public class ServiceReview : IServiceReview
     {
         private IRepositReview _repositReview;
-        private IRepositUser _repositUser;
-        private IRepositProduct _repositProduct;
         private IMapper _mapper;
-        public ServiceReview(IRepositReview repositReview, IRepositUser repositUser, IRepositProduct repositProduct, IMapper mapper)
+        private ILogger<ServiceReview> _logger;
+        public ServiceReview(IRepositReview repositReview, IMapper mapper, ILogger<ServiceReview> logger)
         {
             _repositReview = repositReview;
-            _repositUser = repositUser;
-            _repositProduct = repositProduct;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<int?> Create(CreateReviewRequest request)
@@ -33,11 +32,16 @@ namespace Application.Services
             );
 
             if (result == null) throw new EntityCreateException("Review is not created");
+
+            _logger.LogInformation($"Review created with id {result}");
             return result;
         }
         public async Task<bool> Delete(int id)
         {
-            return await _repositReview.Delete(id);
+            var result = await _repositReview.Delete(id);
+
+            if (result) _logger.LogInformation($"Review deleted with id {id}");
+            return result;
         }
         public async Task<IEnumerable<ReviewDto>> ReadAll()
         {
@@ -66,6 +70,8 @@ namespace Application.Services
             var result = await _repositReview.Update(element);
 
             if (!result) throw new EntityUpdateException("Review is not updated");
+
+            _logger.LogInformation($"Review updated with id {element.Id}");
             return true;
         }
     }

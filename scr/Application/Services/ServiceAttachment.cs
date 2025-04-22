@@ -4,19 +4,20 @@ using Application.Request;
 using AutoMapper;
 using Domain.Entities;
 using Infrastructure.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Services
 {
     public class ServiceAttachment : IServiceAttachment
     {
         private IRepositAttachment _repositAttachment;
-        private IRepositProduct _repositProduct;
         private IMapper _mapper;
-        public ServiceAttachment(IRepositAttachment repositExample, IRepositProduct repositProduct, IMapper mapper)
+        private ILogger<ServiceAttachment> _logger;
+        public ServiceAttachment(IRepositAttachment repositExample, IMapper mapper, ILogger<ServiceAttachment> logger)
         {
             _repositAttachment = repositExample;
-            _repositProduct = repositProduct;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<int?> Create(CreateAttachmentRequest request)
@@ -31,11 +32,16 @@ namespace Application.Services
                 );
 
             if (result == null) throw new EntityCreateException("Attachment is not created");
+
+            _logger.LogInformation($"Attachment created with id {result}");
             return result;
         }
         public async Task<bool> Delete(int id)
         {
-            return await _repositAttachment.Delete(id);
+            var result = await _repositAttachment.Delete(id);
+
+            if (result) _logger.LogInformation($"Attachment deleted with id {id}");
+            return result;
         }
         public async Task<IEnumerable<AttachmentDto>> ReadAll()
         {
@@ -63,6 +69,8 @@ namespace Application.Services
             var result = await _repositAttachment.Update(element);
 
             if (!result) throw new EntityUpdateException("Attachment is not updated");
+
+            _logger.LogInformation($"Attachment updated with id {element.Id}");
             return true;
         }
     }

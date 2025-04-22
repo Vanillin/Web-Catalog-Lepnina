@@ -4,6 +4,7 @@ using Application.Request;
 using AutoMapper;
 using Domain.Entities;
 using Infrastructure.Repositories;
+using Microsoft.Extensions.Logging;
 using Npgsql;
 
 namespace Application.Services
@@ -15,13 +16,15 @@ namespace Application.Services
         private IRepositFavorites _repositFavorites;
         private IMapper _mapper;
         private NpgsqlConnection _connection;
-        public ServiceUser(IRepositUser repositUser, IRepositReview repositReview, IRepositFavorites repositFavorites, IMapper mapper, NpgsqlConnection connection)
+        private ILogger<ServiceUser> _logger;
+        public ServiceUser(IRepositUser repositUser, IRepositReview repositReview, IRepositFavorites repositFavorites, IMapper mapper, NpgsqlConnection connection, ILogger<ServiceUser> logger)
         {
             _repositUser = repositUser;
             _repositReview = repositReview;
             _repositFavorites = repositFavorites;
             _mapper = mapper;
             _connection = connection;
+            _logger = logger;
         }
 
         public async Task<int?> Create(CreateUserRequest request)
@@ -34,6 +37,8 @@ namespace Application.Services
             );
 
             if (result == null) throw new EntityCreateException("User is not created");
+
+            _logger.LogInformation($"User created with id {result}");
             return result;
         }
         public async Task<bool> Delete(int id)
@@ -62,6 +67,8 @@ namespace Application.Services
                     if (!result) throw new EntityDeleteException("User is not deleted");
 
                     tran.Commit();
+
+                    _logger.LogInformation($"Deleted user with id {id} and all connections to it");
                     return true;
                 }
                 catch (BaseApplicationException)
@@ -100,6 +107,8 @@ namespace Application.Services
             var result = await _repositUser.Update(element);
 
             if (!result) throw new EntityUpdateException("User is not updated");
+
+            _logger.LogInformation($"User updated with id {element.Id}");
             return true;
         }
     }

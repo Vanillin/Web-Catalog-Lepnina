@@ -4,6 +4,7 @@ using Application.Request;
 using AutoMapper;
 using Domain.Entities;
 using Infrastructure.Repositories;
+using Microsoft.Extensions.Logging;
 using Npgsql;
 
 namespace Application.Services
@@ -14,19 +15,19 @@ namespace Application.Services
         private IRepositFavorites _repositFavorites;
         private IRepositReview _repositReview;
         private IRepositAttachment _repositAttachment;
-        private IRepositSection _repositSection;
         private IMapper _mapper;
         private NpgsqlConnection _connection;
+        private ILogger<ServiceProduct> _logger;
         public ServiceProduct(IRepositProduct repositProduct, IRepositFavorites repositFavorites, IRepositReview repositReview
-            , IRepositAttachment repositAttachment, IRepositSection repositSection, IMapper mapper, NpgsqlConnection connection)
+            , IRepositAttachment repositAttachment, IMapper mapper, NpgsqlConnection connection, ILogger<ServiceProduct> logger)
         {
             _repositProduct = repositProduct;
             _repositFavorites = repositFavorites;
             _repositReview = repositReview;
             _repositAttachment = repositAttachment;
-            _repositSection = repositSection;
             _mapper = mapper;
             _connection = connection;
+            _logger = logger;
         }
 
         public async Task<int?> Create(CreateProductRequest request)
@@ -45,6 +46,8 @@ namespace Application.Services
                 );
 
             if (result == null) throw new EntityCreateException("Product is not created");
+
+            _logger.LogInformation($"Product created with id {result}");
             return result;
         }
         public async Task<bool> Delete(int id)
@@ -81,6 +84,8 @@ namespace Application.Services
                     if (!result) throw new EntityDeleteException("Product is not deleted");
 
                     tran.Commit();
+
+                    _logger.LogInformation($"Deleted product with id {id} and all connections to it");
                     return true;
                 }
                 catch (BaseApplicationException)
@@ -124,6 +129,8 @@ namespace Application.Services
             var result = await _repositProduct.Update(element);
 
             if (!result) throw new EntityUpdateException("Product is not updated");
+
+            _logger.LogInformation($"Product updated with id {element.Id}");
             return true;
         }
     }

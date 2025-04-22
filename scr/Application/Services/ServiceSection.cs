@@ -4,6 +4,7 @@ using Application.Request;
 using AutoMapper;
 using Domain.Entities;
 using Infrastructure.Repositories;
+using Microsoft.Extensions.Logging;
 using Npgsql;
 
 namespace Application.Services
@@ -14,12 +15,14 @@ namespace Application.Services
         private IRepositProduct _repositProduct;
         private IMapper _mapper;
         private NpgsqlConnection _connection;
-        public ServiceSection(IRepositSection repositSection, IRepositProduct repositProduct, IMapper mapper, NpgsqlConnection connection)
+        private ILogger<ServiceSection> _logger;
+        public ServiceSection(IRepositSection repositSection, IRepositProduct repositProduct, IMapper mapper, NpgsqlConnection connection, ILogger<ServiceSection> logger)
         {
             _repositSection = repositSection;
             _repositProduct = repositProduct;
             _mapper = mapper;
             _connection = connection;
+            _logger = logger;
         }
 
         public async Task<int?> Create(CreateSectionRequest request)
@@ -31,6 +34,8 @@ namespace Application.Services
             );
 
             if (result == null) throw new EntityCreateException("Section is not created");
+
+            _logger.LogInformation($"Section created with id {result}");
             return result;
         }
         public async Task<bool> Delete(int id)
@@ -52,6 +57,8 @@ namespace Application.Services
                     if (!result) throw new EntityDeleteException("Section is not deleted");
 
                     tran.Commit();
+
+                    _logger.LogInformation($"Deleted section with id {id} and all connections to it");
                     return true;
                 }
                 catch (BaseApplicationException)
@@ -89,6 +96,8 @@ namespace Application.Services
             var result = await _repositSection.Update(element);
 
             if (!result) throw new EntityUpdateException("Section is not updated");
+
+            _logger.LogInformation($"Section updated with id {element.Id}");
             return true;
         }
     }
