@@ -12,9 +12,9 @@ namespace Infrastructure.Repositories
             _connection = connection;
         }
 
-        public async Task<(int, int)> Create(Favorites element)
+        public async Task<(int, int)?> Create(Favorites element)
         {
-            (int, int) favoriteId;
+            (int, int)? favoriteId = null;
             try
             {
                 await _connection.OpenAsync();
@@ -22,7 +22,7 @@ namespace Infrastructure.Repositories
                 favoriteId = await _connection.QuerySingleAsync<(int, int)>(@"
                     INSERT INTO favorites (id_user, id_product)
                     VALUES (@IdUser, @IdProduct)
-                    RETURNING iduser, idproduct"
+                    RETURNING id_user, id_product"
                 , element);
             }
             finally

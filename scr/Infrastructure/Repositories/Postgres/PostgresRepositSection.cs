@@ -11,9 +11,9 @@ namespace Infrastructure.Repositories
         {
             _connection = connection;
         }
-        public async Task<int> Create(Section section)
+        public async Task<int?> Create(Section section)
         {
-            int sectionId;
+            int? sectionId = null;
             try
             {
                 await _connection.OpenAsync();
