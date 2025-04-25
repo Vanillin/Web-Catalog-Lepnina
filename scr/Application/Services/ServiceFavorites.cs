@@ -28,14 +28,14 @@ namespace Application.Services
 
             if (result == null) throw new EntityCreateException("Favorite is not created");
 
-            _logger.LogInformation($"Favorite created with user id {result.Value.Item1} and product id {result.Value.Item2}");
+            _logger.LogInformation("Favorite created with user id {UserId} and product id {ProductId}", result.Value.Item1, result.Value.Item2);
             return result;
         }
         public async Task<bool> Delete(int idUser, int idProduct)
         {
             var result = await _repositFavorites.Delete(idUser, idProduct);
 
-            if (result) _logger.LogInformation($"Favorite delete with user id {idUser} and product id {idProduct}");
+            if (result) _logger.LogInformation("Favorite delete with user id {UserId} and product id {ProductId}", idUser, idProduct);
             return result;
         }
         public async Task<IEnumerable<FavoritesDto>> ReadAll()

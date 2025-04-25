@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <Folder Include="ExceptionHandler\" />
+    <Folder Include="logs\" />
   </ItemGroup>
 
 </Project>

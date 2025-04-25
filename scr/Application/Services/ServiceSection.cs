@@ -35,7 +35,7 @@ namespace Application.Services
 
             if (result == null) throw new EntityCreateException("Section is not created");
 
-            _logger.LogInformation($"Section created with id {result}");
+            _logger.LogInformation("Section created with id {SectionId}", result);
             return result;
         }
         public async Task<bool> Delete(int id)
@@ -58,7 +58,7 @@ namespace Application.Services
 
                     tran.Commit();
 
-                    _logger.LogInformation($"Deleted section with id {id} and all connections to it");
+                    _logger.LogInformation("Deleted section with id {SectionId} and all connections to it", id);
                     return true;
                 }
                 catch (BaseApplicationException)
@@ -97,7 +97,7 @@ namespace Application.Services
 
             if (!result) throw new EntityUpdateException("Section is not updated");
 
-            _logger.LogInformation($"Section updated with id {element.Id}");
+            _logger.LogInformation("Section updated with id {SectionId}", element.Id);
             return true;
         }
     }

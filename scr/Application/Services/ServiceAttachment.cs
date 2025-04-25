@@ -33,14 +33,14 @@ namespace Application.Services
 
             if (result == null) throw new EntityCreateException("Attachment is not created");
 
-            _logger.LogInformation($"Attachment created with id {result}");
+            _logger.LogInformation("Attachment created with id {AttachmentId}", result);
             return result;
         }
         public async Task<bool> Delete(int id)
         {
             var result = await _repositAttachment.Delete(id);
 
-            if (result) _logger.LogInformation($"Attachment deleted with id {id}");
+            if (result) _logger.LogInformation("Attachment deleted with id {AttachmentId}", id);
             return result;
         }
         public async Task<IEnumerable<AttachmentDto>> ReadAll()
@@ -70,7 +70,7 @@ namespace Application.Services
 
             if (!result) throw new EntityUpdateException("Attachment is not updated");
 
-            _logger.LogInformation($"Attachment updated with id {element.Id}");
+            _logger.LogInformation("Attachment updated with id {AttachmentId}", element.Id);
             return true;
         }
     }

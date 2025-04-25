@@ -38,7 +38,7 @@ namespace Application.Services
 
             if (result == null) throw new EntityCreateException("User is not created");
 
-            _logger.LogInformation($"User created with id {result}");
+            _logger.LogInformation("User created with id {UserId}", result);
             return result;
         }
         public async Task<bool> Delete(int id)
@@ -68,7 +68,7 @@ namespace Application.Services
 
                     tran.Commit();
 
-                    _logger.LogInformation($"Deleted user with id {id} and all connections to it");
+                    _logger.LogInformation("Deleted user with id {UserId} and all connections to it", id);
                     return true;
                 }
                 catch (BaseApplicationException)
@@ -108,7 +108,7 @@ namespace Application.Services
 
             if (!result) throw new EntityUpdateException("User is not updated");
 
-            _logger.LogInformation($"User updated with id {element.Id}");
+            _logger.LogInformation("User updated with id {UserId}", element.Id);
             return true;
         }
     }

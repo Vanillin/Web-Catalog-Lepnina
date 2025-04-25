@@ -33,14 +33,14 @@ namespace Application.Services
 
             if (result == null) throw new EntityCreateException("Review is not created");
 
-            _logger.LogInformation($"Review created with id {result}");
+            _logger.LogInformation("Review created with id {ReviewId}", result);
             return result;
         }
         public async Task<bool> Delete(int id)
         {
             var result = await _repositReview.Delete(id);
 
-            if (result) _logger.LogInformation($"Review deleted with id {id}");
+            if (result) _logger.LogInformation("Review deleted with id {ReviewId}", id);
             return result;
         }
         public async Task<IEnumerable<ReviewDto>> ReadAll()
@@ -71,7 +71,7 @@ namespace Application.Services
 
             if (!result) throw new EntityUpdateException("Review is not updated");
 
-            _logger.LogInformation($"Review updated with id {element.Id}");
+            _logger.LogInformation("Product updated with id {ProductId}", element.Id);
             return true;
         }
     }

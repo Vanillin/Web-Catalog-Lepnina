@@ -13,7 +13,7 @@ Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
     .Enrich.WithClientIp()
     .WriteTo.Console(outputTemplate: logPattern)
-    .WriteTo.File(Path.Combine("logs", "games-backend-.log"),
+    .WriteTo.File(Path.Combine("logs", "web-backend-.log"),
         rollingInterval: RollingInterval.Day,
         retainedFileCountLimit: 7,
         rollOnFileSizeLimit: true,

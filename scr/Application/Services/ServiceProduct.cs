@@ -47,7 +47,7 @@ namespace Application.Services
 
             if (result == null) throw new EntityCreateException("Product is not created");
 
-            _logger.LogInformation($"Product created with id {result}");
+            _logger.LogInformation("Product created with id {ProductId}", result);
             return result;
         }
         public async Task<bool> Delete(int id)
@@ -85,7 +85,7 @@ namespace Application.Services
 
                     tran.Commit();
 
-                    _logger.LogInformation($"Deleted product with id {id} and all connections to it");
+                    _logger.LogInformation("Deleted product with id {ProductId} and all connections to it", id);
                     return true;
                 }
                 catch (BaseApplicationException)
@@ -130,7 +130,7 @@ namespace Application.Services
 
             if (!result) throw new EntityUpdateException("Product is not updated");
 
-            _logger.LogInformation($"Product updated with id {element.Id}");
+            _logger.LogInformation("Product updated with id {ProductId}", element.Id);
             return true;
         }
     }
