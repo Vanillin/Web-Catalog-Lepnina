@@ -1,6 +1,7 @@
 using Application.Dto;
 using Application.Request;
 using Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -27,18 +28,21 @@ public class ReviewController : ControllerBase
         return Ok(await _serviceReview.ReadAll());
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] CreateReviewRequest review)
     {
         return Ok(await _serviceReview.Create(review));
     }
 
+    [Authorize]
     [HttpPut]
     public async Task<IActionResult> Update([FromBody] UpdateReviewRequest review)
     {
         return Ok(await _serviceReview.Update(review));
     }
 
+    [Authorize]
     [HttpDelete]
     public async Task<IActionResult> Delete([FromQuery] int id)
     {

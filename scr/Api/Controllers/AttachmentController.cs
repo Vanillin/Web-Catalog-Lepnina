@@ -1,6 +1,7 @@
 using Application.Dto;
 using Application.Request;
 using Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -27,18 +28,21 @@ public class AttachmentController : ControllerBase
         return Ok(await _serviceAttachment.ReadAll());
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] CreateAttachmentRequest attachment)
     {
         return Ok(await _serviceAttachment.Create(attachment));
     }
 
+    [Authorize]
     [HttpPut]
     public async Task<IActionResult> Update([FromBody] UpdateAttachmentRequest attachment)
     {
         return Ok(await _serviceAttachment.Update(attachment));
     }
 
+    [Authorize]
     [HttpDelete]
     public async Task<IActionResult> Delete([FromQuery] int id)
     {

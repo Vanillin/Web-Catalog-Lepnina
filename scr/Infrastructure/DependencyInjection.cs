@@ -1,4 +1,5 @@
-﻿using FluentMigrator.Runner;
+﻿using Dapper;
+using FluentMigrator.Runner;
 using Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +31,8 @@ namespace Infrastructure
             services.AddTransient<IRepositSection, PostgresRepositSection>();
             services.AddTransient<IRepositUser, PostgresRepositUser>();
             services.AddTransient<IRepositFavorites, PostgresRepositFavorites>();
+
+            DefaultTypeMap.MatchNamesWithUnderscores = true;
 
             services
                 .AddFluentMigratorCore()

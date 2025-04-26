@@ -1,10 +1,12 @@
-using Application.Dto;
+using Api.Exceptions;
 using Application.Request;
 using Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class UserController : ControllerBase
@@ -27,10 +29,14 @@ public class UserController : ControllerBase
         return Ok(await _serviceUser.ReadAll());
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Add([FromBody] CreateUserRequest user)
+    [HttpGet("userInfo")]
+    public async Task<IActionResult> GetUserInfo()
     {
-        return Ok(await _serviceUser.Create(user));
+        var userId = User.GetUserId();
+        if (!userId.HasValue)
+            return NotFound();
+
+        return Ok(await _serviceUser.ReadById(userId.Value));
     }
 
     [HttpPut]

@@ -1,8 +1,10 @@
 ﻿using Application.Dto;
 using Application.Exception;
 using Application.Request;
+using Application.Services.Interfaces;
 using AutoMapper;
 using Domain.Entities;
+using Domain.Enums;
 using Infrastructure.Repositories;
 using Microsoft.Extensions.Logging;
 using Npgsql;
@@ -17,7 +19,9 @@ namespace Application.Services
         private IMapper _mapper;
         private NpgsqlConnection _connection;
         private ILogger<ServiceUser> _logger;
-        public ServiceUser(IRepositUser repositUser, IRepositReview repositReview, IRepositFavorites repositFavorites, IMapper mapper, NpgsqlConnection connection, ILogger<ServiceUser> logger)
+        private IPasswordHasher _hasher;
+        public ServiceUser(IRepositUser repositUser, IRepositReview repositReview, IRepositFavorites repositFavorites, IMapper mapper,
+            NpgsqlConnection connection, ILogger<ServiceUser> logger, IPasswordHasher passwordHasher)
         {
             _repositUser = repositUser;
             _repositReview = repositReview;
@@ -25,22 +29,9 @@ namespace Application.Services
             _mapper = mapper;
             _connection = connection;
             _logger = logger;
+            _hasher = passwordHasher;
         }
 
-        public async Task<int?> Create(CreateUserRequest request)
-        {
-            var result = await _repositUser.Create(new User()
-            {
-                Name = request.Name,
-                PathIcon = request.PathIcon,
-            }
-            );
-
-            if (result == null) throw new EntityCreateException("User is not created");
-
-            _logger.LogInformation("User created with id {UserId}", result);
-            return result;
-        }
         public async Task<bool> Delete(int id)
         {
             await _connection.OpenAsync();
@@ -103,6 +94,8 @@ namespace Application.Services
 
             element.Name = request.Name;
             element.PathIcon = request.PathIcon;
+            element.Email = request.Email;
+            element.PasswordHash = _hasher.HashPassword(request.Password);
 
             var result = await _repositUser.Update(element);
 
