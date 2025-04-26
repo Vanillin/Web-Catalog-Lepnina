@@ -3,24 +3,23 @@ using Application.Exception;
 using AutoMapper;
 using Domain.Entities;
 using Infrastructure.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Services
 {
     public class ServiceFavorites : IServiceFavorites
     {
         private IRepositFavorites _repositFavorites;
-        private IRepositUser _repositUser;
-        private IRepositProduct _repositProduct;
         private IMapper _mapper;
-        public ServiceFavorites(IRepositFavorites repositUserProduct, IRepositUser repositUser, IRepositProduct repositProduct, IMapper mapper)
+        private ILogger<ServiceFavorites> _logger;
+        public ServiceFavorites(IRepositFavorites repositUserProduct, IMapper mapper, ILogger<ServiceFavorites> logger)
         {
             _repositFavorites = repositUserProduct;
-            _repositUser = repositUser;
-            _repositProduct = repositProduct;
             _mapper = mapper;
+            _logger = logger;
         }
 
-        public async Task<(int,int)?> Create(FavoritesDto element)
+        public async Task<(int, int)?> Create(FavoritesDto element)
         {
             var mapElem = _mapper.Map<Favorites>(element);
             if (mapElem == null) throw new MappingApplicationException("Create element is not correct");
@@ -28,11 +27,16 @@ namespace Application.Services
             var result = await _repositFavorites.Create(mapElem);
 
             if (result == null) throw new EntityCreateException("Favorite is not created");
+
+            _logger.LogInformation("Favorite created with user id {UserId} and product id {ProductId}", result.Value.Item1, result.Value.Item2);
             return result;
         }
         public async Task<bool> Delete(int idUser, int idProduct)
         {
-            return await _repositFavorites.Delete(idUser, idProduct);
+            var result = await _repositFavorites.Delete(idUser, idProduct);
+
+            if (result) _logger.LogInformation("Favorite delete with user id {UserId} and product id {ProductId}", idUser, idProduct);
+            return result;
         }
         public async Task<IEnumerable<FavoritesDto>> ReadAll()
         {
