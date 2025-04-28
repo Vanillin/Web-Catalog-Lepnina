@@ -122,10 +122,10 @@ namespace Infrastructure.Repositories
                     path_icon =  @PathIcon,
                     email = @Email,
                     password_hash = @PasswordHash,
-                    role = @Role
+                    role = @Role::user_role
                 WHERE id = @Id
                 "
-                , user);
+                , user.AsDapperParams());
             }
             finally
             {

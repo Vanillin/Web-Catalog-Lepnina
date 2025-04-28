@@ -28,21 +28,21 @@ public class ProductController : ControllerBase
         return Ok(await _serviceProduct.ReadAll());
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] CreateProductRequest product)
     {
         return Ok(await _serviceProduct.Create(product));
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpPut]
     public async Task<IActionResult> Update([FromBody] UpdateProductRequest product)
     {
         return Ok(await _serviceProduct.Update(product));
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpDelete]
     public async Task<IActionResult> Delete([FromQuery] int id)
     {

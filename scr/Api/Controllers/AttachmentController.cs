@@ -28,21 +28,21 @@ public class AttachmentController : ControllerBase
         return Ok(await _serviceAttachment.ReadAll());
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] CreateAttachmentRequest attachment)
     {
         return Ok(await _serviceAttachment.Create(attachment));
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpPut]
     public async Task<IActionResult> Update([FromBody] UpdateAttachmentRequest attachment)
     {
         return Ok(await _serviceAttachment.Update(attachment));
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpDelete]
     public async Task<IActionResult> Delete([FromQuery] int id)
     {

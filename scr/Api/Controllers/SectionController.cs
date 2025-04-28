@@ -28,21 +28,21 @@ public class SectionController : ControllerBase
         return Ok(await _serviceSection.ReadAll());
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] CreateSectionRequest section)
     {
         return Ok(await _serviceSection.Create(section));
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpPut]
     public async Task<IActionResult> Update([FromBody] UpdateSectionRequest section)
     {
         return Ok(await _serviceSection.Update(section));
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpDelete]
     public async Task<IActionResult> Delete([FromQuery] int id)
     {
