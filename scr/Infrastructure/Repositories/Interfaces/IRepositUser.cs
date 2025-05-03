@@ -8,6 +8,7 @@ namespace Infrastructure.Repositories
         Task<IEnumerable<User>> ReadAll();
         Task<int?> Create(User element);
         Task<bool> Update(User element);
+        Task<User?> ReadByEmail(string email);
         Task<bool> Delete(int id);
     }
 }
