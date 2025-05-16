@@ -11,10 +11,6 @@ namespace Infrastructure.Database.Migrations
                 .WithColumn("id").AsInt32().PrimaryKey().Identity()
                 .WithColumn("name").AsString(255).NotNullable()
             ;
-
-            Insert.IntoTable("sections")
-                .Row(new { name = "first" })
-                .Row(new { name = "second" });
         }
 
         public override void Down()

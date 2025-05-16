@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
         public string? Message { get; set; }
-        public string PathPicture { get; set; } = null!;
+        public int IdPicture { get; set; }
         public int IdProduct { get; set; }
     }
 }

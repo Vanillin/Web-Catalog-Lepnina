@@ -2,7 +2,7 @@
 
 namespace Infrastructure.DataBase.Migrations
 {
-    [Migration(202505161740)]
+    [Migration(202503250000)]
     public class InitialPictureFileMigration : Migration
     {
         public override void Up()
@@ -13,21 +13,10 @@ namespace Infrastructure.DataBase.Migrations
                 .WithColumn("stored_path").AsString().NotNullable()
                 .WithColumn("content_type").AsString().NotNullable()
                 .WithColumn("size").AsInt64().NotNullable();
-
-            //Alter.Table("users")
-            //    .AddColumn("logo_attachment_id").AsInt32().Nullable();
-
-            //Create.ForeignKey("fk_users_logo_attachment_id")
-            //    .FromTable("users").ForeignColumn("logo_attachment_id")
-            //    .ToTable("attachments").PrimaryColumn("id")
-            //    .OnDeleteOrUpdate(Rule.SetNull);
         }
 
         public override void Down()
         {
-            //Delete.ForeignKey("fk_users_logo_attachment_id").OnTable("users");
-            //Delete.Column("logo_attachment_id").FromTable("users");
-
             Delete.Table("picture_file");
         }
     }

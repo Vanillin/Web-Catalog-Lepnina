@@ -41,7 +41,7 @@ namespace Application.Services
                     Width = request.Width,
                     Price = request.Price,
                     Discount = request.Discount,
-                    PathPicture = request.PathPicture
+                    IdPicture = request.IdPicture
                 }
                 );
 
@@ -124,7 +124,7 @@ namespace Application.Services
             element.Width = request.Width;
             element.Price = request.Price;
             element.Discount = request.Discount;
-            element.PathPicture = request.PathPicture;
+            element.IdPicture = request.IdPicture;
 
             var result = await _repositProduct.Update(element);
 

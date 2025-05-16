@@ -54,14 +54,14 @@ namespace Application.Services
             return await _fileStorage.ReadFile(attachment.StoredPath);
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
             var attachment = await _repository.Get(id);
             if (attachment == null)
-                return;
+                return false;
 
             _fileStorage.DeleteFile(attachment.StoredPath);
-            await _repository.Delete(id);
+            return await _repository.Delete(id);
         }
 
         public async Task<string> GetPublicLinkAsync(int id)

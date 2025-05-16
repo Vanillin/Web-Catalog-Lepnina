@@ -25,7 +25,7 @@ namespace Application.Services
             var result = await _repositReview.Create(new Review()
             {
                 Message = request.Message,
-                PathPicture = request.PathPicture,
+                IdPicture = request.IdPicture,
                 IdUser = request.IdUser,
                 IdProduct = request.IdProduct,
             }
@@ -63,7 +63,7 @@ namespace Application.Services
             if (element == null) throw new EntityNotFoundException("Review is not found");
 
             element.Message = request.Message;
-            element.PathPicture = request.PathPicture;
+            element.IdPicture = request.IdPicture;
             element.IdUser = request.IdUser;
             element.IdProduct = request.IdProduct;
 

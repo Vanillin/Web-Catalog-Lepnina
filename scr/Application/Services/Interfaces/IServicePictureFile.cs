@@ -7,7 +7,7 @@ namespace Application.Services
     {
         Task<PictureFileResponce> UploadAsync(IFormFile file, string category);
         Task<byte[]> GetFileContentAsync(int id);
-        Task DeleteAsync(int id);
+        Task<bool> DeleteAsync(int id);
         Task<string> GetPublicLinkAsync(int id);
         Task<PictureFileResponce?> GetMetadataAsync(int id);
     }
