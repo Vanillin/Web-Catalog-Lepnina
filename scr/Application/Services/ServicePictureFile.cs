@@ -47,20 +47,20 @@ namespace Application.Services
 
         public async Task<byte[]> GetFileContentAsync(int id)
         {
-            var attachment = await _repository.Get(id);
-            if (attachment == null || !_fileStorage.FileExists(attachment.StoredPath))
+            var picture = await _repository.Get(id);
+            if (picture == null || !_fileStorage.FileExists(picture.StoredPath))
                 throw new FileNotFoundException("PictureFile not found");
 
-            return await _fileStorage.ReadFile(attachment.StoredPath);
+            return await _fileStorage.ReadFile(picture.StoredPath);
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var attachment = await _repository.Get(id);
-            if (attachment == null)
+            var picture = await _repository.Get(id);
+            if (picture == null)
                 return false;
 
-            _fileStorage.DeleteFile(attachment.StoredPath);
+            _fileStorage.DeleteFile(picture.StoredPath);
             return await _repository.Delete(id);
         }
 
@@ -71,8 +71,8 @@ namespace Application.Services
                 throw new SystemException("HttpContext is null");
             var request = context.Request;
 
-            var attachment = await _repository.Get(id);
-            if (attachment == null)
+            var picture = await _repository.Get(id);
+            if (picture == null)
                 throw new FileNotFoundException("PictureFile not found");
 
             var baseUrl = $"{request.Scheme}://{request.Host}";

@@ -9,10 +9,10 @@ namespace Api.Controllers
     [Route("[controller]")]
     public class SavingFileController : ControllerBase
     {
-        private IServicePictureFile _attachmentService;
-        public SavingFileController(IServicePictureFile attachmentService)
+        private IServicePictureFile _servicePictureFile;
+        public SavingFileController(IServicePictureFile servicePictureFile)
         {
-            _attachmentService = attachmentService;
+            _servicePictureFile = servicePictureFile;
         }
 
         [HttpPost]
@@ -21,9 +21,9 @@ namespace Api.Controllers
             if (file.Length == 0)
                 return BadRequest("File is required");
 
-            var attachment = await _attachmentService.UploadAsync(file, category);
+            var picture = await _servicePictureFile.UploadAsync(file, category);
 
-            return Ok(attachment);
+            return Ok(picture);
         }
 
         [HttpGet("{id}/download")]
@@ -31,11 +31,11 @@ namespace Api.Controllers
         {
             try
             {
-                var file = await _attachmentService.GetMetadataAsync(id);
+                var file = await _servicePictureFile.GetMetadataAsync(id);
                 if (file == null)
                     return NotFound();
 
-                var bytes = await _attachmentService.GetFileContentAsync(id);
+                var bytes = await _servicePictureFile.GetFileContentAsync(id);
                 return File(bytes, file.ContentType, file.FileName);
             }
             catch (FileNotFoundException)
@@ -47,11 +47,11 @@ namespace Api.Controllers
         [HttpGet("{id}/meta")]
         public async Task<IActionResult> GetMetadata(int id)
         {
-            var attachment = await _attachmentService.GetMetadataAsync(id);
-            if (attachment == null)
+            var picture = await _servicePictureFile.GetMetadataAsync(id);
+            if (picture == null)
                 return NotFound();
 
-            return Ok(attachment);
+            return Ok(picture);
         }
 
         [HttpGet("{id}/link")]
@@ -59,7 +59,7 @@ namespace Api.Controllers
         {
             try
             {
-                var link = await _attachmentService.GetPublicLinkAsync(id);
+                var link = await _servicePictureFile.GetPublicLinkAsync(id);
                 return Ok(new { url = link });
             }
             catch (FileNotFoundException)
@@ -71,7 +71,7 @@ namespace Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _attachmentService.DeleteAsync(id);
+            await _servicePictureFile.DeleteAsync(id);
             return Ok(new { message = "PictureFile deleted" });
         }
     }
