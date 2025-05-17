@@ -9,7 +9,7 @@ namespace Application.Request
         public double Width { get; set; }
         public double Price { get; set; }
         public double Discount { get; set; }
-        public string PathPicture { get; set; } = null!;
+        public int IdPicture { get; set; }
         public int IdSection { get; set; }
     }
     public class CreateProductRequestValidator : AbstractValidator<CreateProductRequest>
@@ -26,8 +26,8 @@ namespace Application.Request
                  .InclusiveBetween(0, double.MaxValue);
             RuleFor(x => x.Discount)
                 .InclusiveBetween(0, 1).WithMessage("Discount must be more/equals 0 and less/equals 1");
-            RuleFor(x => x.PathPicture).NotEmpty()
-                .MaximumLength(ValidationConstants.MaxPathPictureLenght).WithMessage("PathPicture is too long");
+            RuleFor(x => x.IdPicture).NotEmpty()
+                .InclusiveBetween(1, int.MaxValue);
             RuleFor(x => x.IdSection).NotEmpty()
                  .InclusiveBetween(1, int.MaxValue);
         }

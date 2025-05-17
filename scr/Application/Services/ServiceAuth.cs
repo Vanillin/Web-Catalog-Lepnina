@@ -33,7 +33,7 @@ namespace Application.Services
             var result = await _repositUser.Create(new User()
             {
                 Name = request.Name,
-                PathIcon = request.PathIcon,
+                IdPictureIcon = request.IdPictureIcon,
                 Email = request.Email,
                 PasswordHash = _hasher.HashPassword(request.Password),
                 Role = UserRoles.User,

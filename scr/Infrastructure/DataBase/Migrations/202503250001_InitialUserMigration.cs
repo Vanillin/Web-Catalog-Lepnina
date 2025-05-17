@@ -10,13 +10,8 @@ namespace Infrastructure.Database.Migrations
             Create.Table("users")
                 .WithColumn("id").AsInt32().PrimaryKey().Identity()
                 .WithColumn("name").AsString(255).NotNullable()
-                .WithColumn("path_icon").AsString(255).Nullable()
+                .WithColumn("id_picture_icon").AsInt32().Nullable().ForeignKey("picture_file", "id")
             ;
-
-            Insert.IntoTable("users")
-                .Row(new { name = "firstuser", path_icon = "firstusericon" })
-                .Row(new { name = "seconduser", path_icon = "secondusericon" })
-                .Row(new { name = "thirduser", path_icon = "thirdusericon" });
         }
         public override void Down()
         {

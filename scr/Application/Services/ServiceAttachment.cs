@@ -27,7 +27,7 @@ namespace Application.Services
                 {
                     IdProduct = request.IdProduct,
                     Message = request.Message,
-                    PathPicture = request.PathPicture,
+                    IdPicture = request.IdPicture,
                 }
                 );
 
@@ -64,7 +64,7 @@ namespace Application.Services
 
             element.IdProduct = request.IdProduct;
             element.Message = request.Message;
-            element.PathPicture = request.PathPicture;
+            element.IdPicture = request.IdPicture;
 
             var result = await _repositAttachment.Update(element);
 

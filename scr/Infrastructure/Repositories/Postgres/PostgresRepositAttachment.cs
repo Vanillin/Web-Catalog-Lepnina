@@ -19,8 +19,8 @@ namespace Infrastructure.Repositories
                 await _connection.OpenAsync();
 
                 attachmentId = await _connection.QuerySingleAsync<int>(@"
-                INSERT INTO attachments (message, path_picture, id_product)
-                VALUES (@Message, @PathPicture, @IdProduct)
+                INSERT INTO attachments (message, id_picture, id_product)
+                VALUES (@Message, @IdPicture, @IdProduct)
                 RETURNING id"
                 , attachment);
             }
@@ -58,7 +58,7 @@ namespace Infrastructure.Repositories
                 await _connection.OpenAsync();
 
                 attachments = await _connection.QueryAsync<Attachment>(@"
-                SELECT id, message, path_picture as PathPicture, id_product as IdProduct FROM attachments
+                SELECT id, message, id_picture as IdPicture, id_product as IdProduct FROM attachments
                 "
                 );
             }
@@ -77,7 +77,7 @@ namespace Infrastructure.Repositories
                 await _connection.OpenAsync();
 
                 attachment = await _connection.QueryFirstOrDefaultAsync<Attachment>(@"
-                SELECT id, message, path_picture as PathPicture, id_product as IdProduct FROM attachments
+                SELECT id, message, id_picture as IdPicture, id_product as IdProduct FROM attachments
                 WHERE id = @Id
                 "
                 , new { Id = id });
@@ -99,7 +99,7 @@ namespace Infrastructure.Repositories
                 affectedRow = await _connection.ExecuteAsync(@"
                 UPDATE attachments
                 SET message = @Message,
-                    path_picture =  @PathPicture,
+                    id_picture =  @IdPicture,
                     id_product = @IdProduct
                 WHERE id = @Id
                 "

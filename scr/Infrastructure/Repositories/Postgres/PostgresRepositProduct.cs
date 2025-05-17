@@ -19,8 +19,8 @@ namespace Infrastructure.Repositories
                 await _connection.OpenAsync();
 
                 productId = await _connection.QuerySingleAsync<int>(@"
-                INSERT INTO products (length, height, width, price, discount, path_picture, id_section)
-                VALUES (@Length, @Height, @Width, @Price, @Discount, @PathPicture, @IdSection)
+                INSERT INTO products (length, height, width, price, discount, id_picture, id_section)
+                VALUES (@Length, @Height, @Width, @Price, @Discount, @IdPicture, @IdSection)
                 RETURNING id"
                 , product);
             }
@@ -58,7 +58,7 @@ namespace Infrastructure.Repositories
                 await _connection.OpenAsync();
 
                 products = await _connection.QueryAsync<Product>(@"
-                SELECT id, length, height, width, price, discount, path_picture as PathPicture, id_section as IdSection FROM products
+                SELECT id, length, height, width, price, discount, id_picture as IdPicture, id_section as IdSection FROM products
                 "
                 );
             }
@@ -77,7 +77,7 @@ namespace Infrastructure.Repositories
                 await _connection.OpenAsync();
 
                 product = await _connection.QueryFirstOrDefaultAsync<Product>(@"
-                SELECT id, length, height, width, price, discount, path_picture as PathPicture, id_section as IdSection FROM products
+                SELECT id, length, height, width, price, discount, id_picture as IdPicture, id_section as IdSection FROM products
                 WHERE id = @Id
                 "
                 , new { Id = id });
@@ -104,7 +104,7 @@ namespace Infrastructure.Repositories
                     width = @Width,
                     price = @Price,
                     discount = @Discount,
-                    path_picture = @PathPicture,
+                    id_picture = @IdPicture,
                     id_section = @IdSection
                 WHERE id = @Id
                 "

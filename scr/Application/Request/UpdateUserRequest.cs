@@ -6,7 +6,7 @@ namespace Application.Request
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;
-        public string? PathIcon { get; set; }
+        public int? IdPictureIcon { get; set; }
         public string Email { get; set; } = null!;
         public string Password { get; set; } = null!;
     }
@@ -18,8 +18,8 @@ namespace Application.Request
                 .InclusiveBetween(1, int.MaxValue);
             RuleFor(x => x.Name).NotEmpty()
                 .MaximumLength(ValidationConstants.MaxNameLenght).WithMessage("Name is too long");
-            RuleFor(x => x.PathIcon)
-                .MaximumLength(ValidationConstants.MaxPathPictureLenght).WithMessage("PathPicture is too long");
+            RuleFor(x => x.IdPictureIcon)
+                .InclusiveBetween(1, int.MaxValue);
             RuleFor(x => x.Email).NotEmpty()
                 .EmailAddress();
             RuleFor(x => x.Password).NotEmpty()

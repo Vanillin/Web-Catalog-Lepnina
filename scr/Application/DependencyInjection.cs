@@ -3,7 +3,6 @@ using Application.Services;
 using Application.Services.Interfaces;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
@@ -22,6 +21,8 @@ namespace Application
             services.AddTransient<IServiceFavorites, ServiceFavorites>();
             services.AddTransient<IServiceAuth, ServiceAuth>();
             services.AddTransient<IPasswordHasher, BCryptHasher>();
+            services.AddTransient<IServicePictureFile, ServicePictureFile>();
+            services.AddTransient<IServiceFileStorage, ServiceFileStorage>();
 
             services.AddFluentValidationAutoValidation();
             services.AddFluentValidationClientsideAdapters();

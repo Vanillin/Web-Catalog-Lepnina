@@ -93,7 +93,7 @@ namespace Application.Services
             if (element == null) throw new EntityNotFoundException("User is not found");
 
             element.Name = request.Name;
-            element.PathIcon = request.PathIcon;
+            element.IdPictureIcon = request.IdPictureIcon;
             element.Email = request.Email;
             element.PasswordHash = _hasher.HashPassword(request.Password);
 
