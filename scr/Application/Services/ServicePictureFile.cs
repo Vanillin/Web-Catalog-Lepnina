@@ -19,6 +19,9 @@ namespace Application.Services
         }
         public async Task<PictureFileResponce> UploadAsync(IFormFile file, string category)
         {
+            if (file.Length == 0)
+                throw new ArgumentIsNullException("File is required");
+
             var extension = Path.GetExtension(file.FileName);
             var fileName = $"{Guid.NewGuid()}{extension}";
             var storedPath = await _fileStorage.SaveFile(file, category, fileName);
@@ -49,7 +52,7 @@ namespace Application.Services
         {
             var picture = await _repository.Get(id);
             if (picture == null || !_fileStorage.FileExists(picture.StoredPath))
-                throw new FileNotFoundException("PictureFile not found");
+                throw new EntityNotFoundException("PictureFile not found");
 
             return await _fileStorage.ReadFile(picture.StoredPath);
         }
@@ -68,31 +71,31 @@ namespace Application.Services
         {
             var context = _httpContextAccessor.HttpContext;
             if (context == null)
-                throw new SystemException("HttpContext is null");
+                throw new ArgumentIsNullException("HttpContext is null");
             var request = context.Request;
 
             var picture = await _repository.Get(id);
             if (picture == null)
-                throw new FileNotFoundException("PictureFile not found");
+                throw new EntityNotFoundException("PictureFile not found");
 
             var baseUrl = $"{request.Scheme}://{request.Host}";
             return $"{baseUrl}/api/attachments/{id}/download";
         }
 
-        public async Task<PictureFileResponce?> GetMetadataAsync(int id)
+        public async Task<PictureFileResponce> GetMetadataAsync(int id)
         {
             PictureFile? pictureFile = await _repository.Get(id);
             if (pictureFile == null)
-                return null;
-            else
-                return new PictureFileResponce
-                {
-                    Id = pictureFile.Id,
-                    FileName = pictureFile.FileName,
-                    StoredPath = pictureFile.StoredPath,
-                    ContentType = pictureFile.ContentType,
-                    Size = pictureFile.Size
-                };
+                throw new EntityNotFoundException("PictureFile not found");
+
+            return new PictureFileResponce
+            {
+                Id = pictureFile.Id,
+                FileName = pictureFile.FileName,
+                StoredPath = pictureFile.StoredPath,
+                ContentType = pictureFile.ContentType,
+                Size = pictureFile.Size
+            };
         }
     }
 }

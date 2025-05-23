@@ -9,6 +9,6 @@ namespace Application.Services
         Task<byte[]> GetFileContentAsync(int id);
         Task<bool> DeleteAsync(int id);
         Task<string> GetPublicLinkAsync(int id);
-        Task<PictureFileResponce?> GetMetadataAsync(int id);
+        Task<PictureFileResponce> GetMetadataAsync(int id);
     }
 }
