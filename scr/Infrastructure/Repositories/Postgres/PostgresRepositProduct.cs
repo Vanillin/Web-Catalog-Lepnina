@@ -50,6 +50,28 @@ namespace Infrastructure.Repositories
 
             return affectedRows > 0;
         }
+
+        public async Task<IEnumerable<Product>> GetBySection(int idSection)
+        {
+            IEnumerable<Product> products;
+            try
+            {
+                await _connection.OpenAsync();
+
+                products = await _connection.QueryAsync<Product>(@"
+                SELECT id, length, height, width, price, discount, id_picture as IdPicture, id_section as IdSection FROM products
+                WHERE id_section = @IdSection
+                "
+                , new { IdSection = idSection });
+            }
+            finally
+            {
+                await _connection.CloseAsync();
+            }
+
+            return products;
+        }
+
         public async Task<IEnumerable<Product>> ReadAll()
         {
             IEnumerable<Product> products;

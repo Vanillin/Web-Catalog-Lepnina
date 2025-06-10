@@ -17,17 +17,17 @@ public class UserController : ControllerBase
         _serviceUser = serviceUser;
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetByIdAsync(int id)
-    {
-        return Ok(await _serviceUser.ReadById(id));
-    }
+    //[HttpGet("{id}")]
+    //public async Task<IActionResult> GetByIdAsync(int id)
+    //{
+    //    return Ok(await _serviceUser.ReadById(id));
+    //}
 
-    [HttpGet("all")]
-    public async Task<IActionResult> GetAll()
-    {
-        return Ok(await _serviceUser.ReadAll());
-    }
+    //[HttpGet("all")]
+    //public async Task<IActionResult> GetAll()
+    //{
+    //    return Ok(await _serviceUser.ReadAll());
+    //}
 
     [HttpGet("userInfo")]
     public async Task<IActionResult> GetUserInfo()

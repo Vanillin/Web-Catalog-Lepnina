@@ -1,3 +1,4 @@
+using Api.Exceptions;
 using Application.Dto;
 using Application.Request;
 using Application.Services;
@@ -16,16 +17,33 @@ public class ProductController : ControllerBase
         _serviceProduct = serviceProduct;
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetByIdAsync(int id)
+    //[HttpGet("{id}")]
+    //public async Task<IActionResult> GetByIdAsync(int id)
+    //{
+    //    return Ok(await _serviceProduct.ReadById(id));
+    //}
+
+    //[HttpGet("all")]
+    //public async Task<IActionResult> GetAll()
+    //{
+    //    return Ok(await _serviceProduct.ReadAll());
+    //}
+    
+    [HttpGet("section/{id}")]
+    public async Task<IActionResult> GetAllBySection(int id)
     {
-        return Ok(await _serviceProduct.ReadById(id));
+        return Ok(await _serviceProduct.GetBySection(id));
     }
 
-    [HttpGet("all")]
-    public async Task<IActionResult> GetAll()
+    [Authorize]
+    [HttpGet("user")]
+    public async Task<IActionResult> GetAllByFavorite()
     {
-        return Ok(await _serviceProduct.ReadAll());
+        var userId = User.GetUserId();
+        if (!userId.HasValue)
+            return NotFound();
+
+        return Ok(await _serviceProduct.GetByFavorite(userId.Value));
     }
 
     [Authorize(Roles = "Admin")]

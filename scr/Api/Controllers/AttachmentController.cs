@@ -16,36 +16,36 @@ public class AttachmentController : ControllerBase
         _serviceAttachment = serviceAttachment;
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetByIdAsync(int id)
-    {
-        return Ok(await _serviceAttachment.ReadById(id));
-    }
+    //[HttpGet("{id}")]
+    //public async Task<IActionResult> GetByIdAsync(int id)
+    //{
+    //    return Ok(await _serviceAttachment.ReadById(id));
+    //}
 
-    [HttpGet("all")]
-    public async Task<IActionResult> GetAll()
-    {
-        return Ok(await _serviceAttachment.ReadAll());
-    }
+    //[HttpGet("all")]
+    //public async Task<IActionResult> GetAll()
+    //{
+    //    return Ok(await _serviceAttachment.ReadAll());
+    //}
 
-    [Authorize(Roles = "Admin")]
-    [HttpPost]
-    public async Task<IActionResult> Add([FromBody] CreateAttachmentRequest attachment)
-    {
-        return Ok(await _serviceAttachment.Create(attachment));
-    }
+    //[Authorize(Roles = "Admin")]
+    //[HttpPost]
+    //public async Task<IActionResult> Add([FromBody] CreateAttachmentRequest attachment)
+    //{
+    //    return Ok(await _serviceAttachment.Create(attachment));
+    //}
 
-    [Authorize(Roles = "Admin")]
-    [HttpPut]
-    public async Task<IActionResult> Update([FromBody] UpdateAttachmentRequest attachment)
-    {
-        return Ok(await _serviceAttachment.Update(attachment));
-    }
+    //[Authorize(Roles = "Admin")]
+    //[HttpPut]
+    //public async Task<IActionResult> Update([FromBody] UpdateAttachmentRequest attachment)
+    //{
+    //    return Ok(await _serviceAttachment.Update(attachment));
+    //}
 
-    [Authorize(Roles = "Admin")]
-    [HttpDelete]
-    public async Task<IActionResult> Delete([FromQuery] int id)
-    {
-        return Ok(await _serviceAttachment.Delete(id));
-    }
+    //[Authorize(Roles = "Admin")]
+    //[HttpDelete]
+    //public async Task<IActionResult> Delete([FromQuery] int id)
+    //{
+    //    return Ok(await _serviceAttachment.Delete(id));
+    //}
 }
