@@ -20,8 +20,8 @@ namespace Infrastructure.Repositories
                 await _connection.OpenAsync();
 
                 userId = await _connection.QuerySingleAsync<int>(@"
-                INSERT INTO users (name, path_icon, email, password_hash, role)
-                VALUES (@Name, @PathIcon, @Email, @PasswordHash, @Role::user_role)
+                INSERT INTO users (name, id_picture_icon, email, password_hash, role)
+                VALUES (@Name, @IdPictureIcon, @Email, @PasswordHash, @Role::user_role)
                 RETURNING id"
                 , user.AsDapperParams());
             }
@@ -59,7 +59,7 @@ namespace Infrastructure.Repositories
                 await _connection.OpenAsync();
 
                 users = await _connection.QueryAsync<User>(@"
-                SELECT id, name, path_icon as PathIcon, email, password_hash as PasswordHash, role FROM users
+                SELECT id, name, id_picture_icon as IdPictureIcon, email, password_hash as PasswordHash, role FROM users
                 "
                 );
             }
@@ -78,7 +78,7 @@ namespace Infrastructure.Repositories
                 await _connection.OpenAsync();
 
                 user = await _connection.QueryFirstOrDefaultAsync<User>(@"
-                SELECT id, name, path_icon as PathIcon, email, password_hash as PasswordHash, role FROM users
+                SELECT id, name, id_picture_icon as IdPictureIcon, email, password_hash as PasswordHash, role FROM users
                 WHERE id = @Id
                 "
                 , new { Id = id });
@@ -119,7 +119,7 @@ namespace Infrastructure.Repositories
                 affectedRow = await _connection.ExecuteAsync(@"
                 UPDATE users
                 SET name = @Name,
-                    path_icon =  @PathIcon,
+                    id_picture_icon =  @IdPictureIcon,
                     email = @Email,
                     password_hash = @PasswordHash,
                     role = @Role::user_role

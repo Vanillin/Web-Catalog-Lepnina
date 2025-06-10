@@ -15,6 +15,12 @@ namespace Api.Controllers
             _servicePictureFile = servicePictureFile;
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Upload(IFormFile file, [FromQuery] string category = "pictureFile")
+        {
+            return Ok(await _servicePictureFile.UploadAsync(file, category));
+        }
+
         [HttpGet("{id}/download")]
         public async Task<IActionResult> Download(int id)
         {
@@ -34,12 +40,6 @@ namespace Api.Controllers
         public async Task<IActionResult> GetLink(int id)
         {
             return Ok(await _servicePictureFile.GetPublicLinkAsync(id));
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Upload(IFormFile file, [FromQuery] string category = "pictureFile")
-        {
-            return Ok(await _servicePictureFile.UploadAsync(file, category));
         }
 
         [HttpDelete("{id}")]

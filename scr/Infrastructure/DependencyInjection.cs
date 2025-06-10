@@ -31,6 +31,7 @@ namespace Infrastructure
             services.AddTransient<IRepositSection, PostgresRepositSection>();
             services.AddTransient<IRepositUser, PostgresRepositUser>();
             services.AddTransient<IRepositFavorites, PostgresRepositFavorites>();
+            services.AddTransient<IRepositPictureFile, PostgresRepositPictureFile>();
 
             DefaultTypeMap.MatchNamesWithUnderscores = true;
 
