@@ -19,8 +19,8 @@ namespace Infrastructure.Repositories
                 await _connection.OpenAsync();
 
                 reviewId = await _connection.QuerySingleAsync<int>(@"
-                INSERT INTO reviews (message, path_picture, id_user, id_product)
-                VALUES (@Message, @PathPicture, @IdUser, @IdProduct)
+                INSERT INTO reviews (message, id_picture, id_user, id_product)
+                VALUES (@Message, @IdPicture, @IdUser, @IdProduct)
                 RETURNING id"
                 , review);
             }
@@ -58,7 +58,7 @@ namespace Infrastructure.Repositories
                 await _connection.OpenAsync();
 
                 reviews = await _connection.QueryAsync<Review>(@"
-                SELECT id, message, path_picture as PathPicture, id_user as IsUser, id_product as IdProduct FROM reviews
+                SELECT id, message, id_picture as IdPicture, id_user as IsUser, id_product as IdProduct FROM reviews
                 "
                 );
             }
@@ -77,7 +77,7 @@ namespace Infrastructure.Repositories
                 await _connection.OpenAsync();
 
                 review = await _connection.QueryFirstOrDefaultAsync<Review>(@"
-                SELECT id, message, path_picture as PathPicture, id_user as IsUser, id_product as IdProduct FROM reviews
+                SELECT id, message, id_picture as IdPicture, id_user as IsUser, id_product as IdProduct FROM reviews
                 WHERE id = @Id
                 "
                 , new { Id = id });
@@ -100,7 +100,7 @@ namespace Infrastructure.Repositories
                 UPDATE reviews
                 SET 
                     message = @Message,
-                    path_picture =  @PathPicture,
+                    id_picture =  @IdPicture,
                     id_user = @IdUser,
                     id_product = @IdProduct
                 WHERE id = @Id
