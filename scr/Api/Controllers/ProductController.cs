@@ -2,6 +2,7 @@ using Api.Exceptions;
 using Application.Dto;
 using Application.Request;
 using Application.Services;
+using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,23 +29,49 @@ public class ProductController : ControllerBase
     //{
     //    return Ok(await _serviceProduct.ReadAll());
     //}
-    
-    [HttpGet("section/{id}")]
-    public async Task<IActionResult> GetAllBySection(int id)
-    {
-        return Ok(await _serviceProduct.GetBySection(id));
-    }
 
+    [HttpGet("catalog/{id}/{isFavorite}")]
+    public async Task<IActionResult> GetProductForCatalog(int id, bool isFavorite)
+    {
+        var productsSection = await _serviceProduct.GetBySection(id);
+        if (productsSection == null || productsSection.Count() == 0)
+        {
+            productsSection = await _serviceProduct.ReadAll();
+        }
+
+        if (isFavorite)
+            return await GetAllByFavorite(productsSection);
+        else 
+            return Ok(productsSection);
+    }
     [Authorize]
-    [HttpGet("user")]
-    public async Task<IActionResult> GetAllByFavorite()
+    private async Task<IActionResult> GetAllByFavorite(IEnumerable<ProductDto> products)
     {
         var userId = User.GetUserId();
         if (!userId.HasValue)
             return NotFound();
 
-        return Ok(await _serviceProduct.GetByFavorite(userId.Value));
+        var favoriteProducts = await _serviceProduct.GetByFavorite(userId.Value);
+
+        return Ok(favoriteProducts.Where(x => favoriteProducts.Contains(x)));
     }
+
+    //[HttpGet("section/{id}")]
+    //public async Task<IActionResult> GetAllBySection(int id)
+    //{
+    //    return Ok(await _serviceProduct.GetBySection(id));
+    //}
+
+    //[Authorize]
+    //[HttpGet("user")]
+    //public async Task<IActionResult> GetAllByFavorite()
+    //{
+    //    var userId = User.GetUserId();
+    //    if (!userId.HasValue)
+    //        return NotFound();
+
+    //    return Ok(await _serviceProduct.GetByFavorite(userId.Value));
+    //}
 
     [Authorize(Roles = "Admin")]
     [HttpPost]

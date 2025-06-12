@@ -28,10 +28,16 @@ public class FavoritesController : ControllerBase
     //    return Ok(await _serviceFavorites.ReadAll());
     //}
 
-    [HttpPost]
-    public async Task<IActionResult> Add([FromBody] FavoritesDto favorites)
+    [HttpPost("{idUser}/{idProduct}")]
+    public async Task<IActionResult> Add(int idUser, int idProduct)
     {
-        return Ok(await _serviceFavorites.Create(favorites));
+
+        return Ok(await _serviceFavorites.Create(
+            new FavoritesDto()
+            {
+                IdUser = idUser,
+                IdProduct = idProduct
+            }));
     }
 
     [HttpDelete("{idUser}/{idProduct}")]
