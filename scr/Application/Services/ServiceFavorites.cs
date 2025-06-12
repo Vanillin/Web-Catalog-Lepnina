@@ -1,5 +1,6 @@
 ﻿using Application.Dto;
 using Application.Exception;
+using Application.Response;
 using AutoMapper;
 using Domain.Entities;
 using Infrastructure.Repositories;
@@ -19,7 +20,7 @@ namespace Application.Services
             _logger = logger;
         }
 
-        public async Task<(int, int)?> Create(FavoritesDto element)
+        public async Task<CreateFavoriteResponce?> Create(FavoritesDto element)
         {
             var mapElem = _mapper.Map<Favorites>(element);
             if (mapElem == null) throw new MappingApplicationException("Create element is not correct");
@@ -29,7 +30,12 @@ namespace Application.Services
             if (result == null) throw new EntityCreateException("Favorite is not created");
 
             _logger.LogInformation("Favorite created with user id {UserId} and product id {ProductId}", result.Value.Item1, result.Value.Item2);
-            return result;
+
+            return new CreateFavoriteResponce()
+            {
+                IdUser = result.Value.Item1,
+                IdProduct = result.Value.Item2
+            };
         }
         public async Task<bool> Delete(int idUser, int idProduct)
         {
