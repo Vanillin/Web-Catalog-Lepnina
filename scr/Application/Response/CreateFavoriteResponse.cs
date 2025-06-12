@@ -1,6 +1,6 @@
 ﻿namespace Application.Response
 {
-    public class CreateFavoriteResponce
+    public class CreateFavoriteResponse
     {
         public int IdUser { get; set; }
         public int IdProduct { get; set; }

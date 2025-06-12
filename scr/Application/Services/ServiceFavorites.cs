@@ -20,7 +20,7 @@ namespace Application.Services
             _logger = logger;
         }
 
-        public async Task<CreateFavoriteResponce?> Create(FavoritesDto element)
+        public async Task<CreateFavoriteResponse?> Create(FavoritesDto element)
         {
             var mapElem = _mapper.Map<Favorites>(element);
             if (mapElem == null) throw new MappingApplicationException("Create element is not correct");
@@ -31,7 +31,7 @@ namespace Application.Services
 
             _logger.LogInformation("Favorite created with user id {UserId} and product id {ProductId}", result.Value.Item1, result.Value.Item2);
 
-            return new CreateFavoriteResponce()
+            return new CreateFavoriteResponse()
             {
                 IdUser = result.Value.Item1,
                 IdProduct = result.Value.Item2
