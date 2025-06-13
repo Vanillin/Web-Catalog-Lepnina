@@ -8,7 +8,7 @@ namespace Infrastructure.Database.Migrations
         public override void Up()
         {
             Create.Table("attachments")
-                .WithColumn("id").AsInt32().PrimaryKey().Identity()
+                .WithColumn("id").AsInt32().PrimaryKey().Identity().Unique()
                 .WithColumn("message").AsString(255).Nullable()
                 .WithColumn("id_picture").AsInt32().NotNullable().ForeignKey("picture_file", "id")
                 .WithColumn("id_product").AsInt32().NotNullable().ForeignKey("products", "id")

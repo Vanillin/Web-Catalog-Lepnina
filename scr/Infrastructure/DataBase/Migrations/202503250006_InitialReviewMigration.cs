@@ -8,7 +8,7 @@ namespace Infrastructure.Database.Migrations
         public override void Up()
         {
             Create.Table("reviews")
-                .WithColumn("id").AsInt32().PrimaryKey().Identity()
+                .WithColumn("id").AsInt32().PrimaryKey().Identity().Unique()
                 .WithColumn("message").AsString(255).NotNullable()
                 .WithColumn("id_picture").AsInt32().Nullable().ForeignKey("picture_file", "id")
                 .WithColumn("id_user").AsInt32().NotNullable().ForeignKey("users", "id")

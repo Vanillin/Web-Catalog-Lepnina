@@ -1,16 +1,12 @@
 ﻿using Application.Exception;
 using Application.Request;
-using Application.Response;
 using Application.Services.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
 using Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 
 namespace Application.Services
 {
@@ -27,7 +23,7 @@ namespace Application.Services
             _hasher = passwordHasher;
             _configuration = configuration;
         }
-        public async Task<int?> Register(RegistrationUserRequest request)
+        public async Task<ClaimsPrincipal> Register(RegistrationUserRequest request)
         {
             //The UserRoles.Admin is created only manually in the database.
             var result = await _repositUser.Create(new User()
@@ -41,10 +37,16 @@ namespace Application.Services
 
             if (result == null) throw new EntityCreateException("User is not created");
 
+            var createdUser = await _repositUser.ReadById((int)result);
+
+            if (createdUser == null) throw new EntityCreateException("User is not created");
+
             _logger.LogInformation("User created with id {UserId}", result);
-            return result;
+
+            var principal = GenerateClaimsPrincipal(createdUser);
+            return principal;
         }
-        public async Task<LoginResponse> Login(LoginRequest request)
+        public async Task<ClaimsPrincipal> Login(LoginRequest request)
         {
             var user = await _repositUser.ReadByEmail(request.Email);
             var passwordVerified =
@@ -53,39 +55,21 @@ namespace Application.Services
             {
                 throw new UnauthorizedAccessException();
             }
-            var token = GenerateJwtToken(user);
-
-            return new LoginResponse() { Token = token };
+            var principal = GenerateClaimsPrincipal(user);
+            return principal;
         }
 
-        private string GenerateJwtToken(User user)
+        private ClaimsPrincipal GenerateClaimsPrincipal(User user)
         {
-            var jwtSecret = _configuration["JwtSettings:Secret"] ?? throw new ArgumentNullException("JwtSettings:Secret");
-            var jwtIssuer = _configuration["JwtSettings:Issuer"] ?? throw new ArgumentNullException("JwtSettings:Issuer");
-            var jwtAudience = _configuration["JwtSettings:Audience"] ??
-                              throw new ArgumentNullException("JwtSettings:Audience");
-            var jwtExpirationMinutes = int.Parse(_configuration["JwtSettings:ExpirationInMinutes"] ?? "60");
-
-            var key = Encoding.ASCII.GetBytes(jwtSecret);
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var tokenDescriptor = new SecurityTokenDescriptor
+            var identity = new ClaimsIdentity(new[]
             {
-                Subject = new ClaimsIdentity(new[]
-                {
-                 new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
-                 new Claim(ClaimTypes.GivenName, user.Name ?? string.Empty),
-                 new Claim(ClaimTypes.Role, user.Role.ToString() ?? string.Empty),
-                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-             }),
-                Expires = DateTime.UtcNow.AddMinutes(jwtExpirationMinutes),
-                Issuer = jwtIssuer,
-                Audience = jwtAudience,
-                SigningCredentials =
-                    new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
-        }
+                new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
+                new Claim(ClaimTypes.GivenName, user.Name ?? string.Empty),
+                new Claim(ClaimTypes.Role, user.Role.ToString() ?? string.Empty),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            }, "HttpOnlyAuth");
 
+            return new ClaimsPrincipal(identity);
+        }
     }
 }

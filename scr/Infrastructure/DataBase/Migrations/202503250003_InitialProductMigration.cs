@@ -8,7 +8,7 @@ namespace Infrastructure.Database.Migrations
         public override void Up()
         {
             Create.Table("products")
-                .WithColumn("id").AsInt32().PrimaryKey().Identity()
+                .WithColumn("id").AsInt32().PrimaryKey().Identity().Unique()
                 .WithColumn("length").AsDouble().NotNullable()
                 .WithColumn("height").AsDouble().NotNullable()
                 .WithColumn("width").AsDouble().NotNullable()

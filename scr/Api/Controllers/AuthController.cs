@@ -16,16 +16,18 @@ namespace Api.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegistrationUserRequest request)
         {
-            var response = await _authService.Register(request);
-            return Ok(response);
+            var principal = await _authService.Register(request);
+            await HttpContext.SignInAsync(principal);
+            return Created();
         }
 
         [EnableRateLimiting("login")]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            var response = await _authService.Login(request);
-            return Ok(response);
+            var principal = await _authService.Login(request);
+            await HttpContext.SignInAsync(principal);
+            return Created();
         }
 
         [Authorize]
