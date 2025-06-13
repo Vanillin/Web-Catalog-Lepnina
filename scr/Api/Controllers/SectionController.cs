@@ -16,11 +16,11 @@ public class SectionController : ControllerBase
         _serviceSection = serviceSection;
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetByIdAsync(int id)
-    {
-        return Ok(await _serviceSection.ReadById(id));
-    }
+    //[HttpGet("{id}")]
+    //public async Task<IActionResult> GetByIdAsync(int id)
+    //{
+    //    return Ok(await _serviceSection.ReadById(id));
+    //}
 
     [HttpGet("all")]
     public async Task<IActionResult> GetAll()

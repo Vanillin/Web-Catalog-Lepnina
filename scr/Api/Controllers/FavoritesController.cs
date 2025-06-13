@@ -16,22 +16,28 @@ public class FavoritesController : ControllerBase
         _serviceFavorites = serviceFavorites;
     }
 
-    [HttpGet("{idUser}/{idProduct}")]
-    public async Task<IActionResult> GetByIdAsync(int idUser, int idProduct)
-    {
-        return Ok(await _serviceFavorites.ReadById(idUser, idProduct));
-    }
+    //[HttpGet("{idUser}/{idProduct}")]
+    //public async Task<IActionResult> GetByIdAsync(int idUser, int idProduct)
+    //{
+    //    return Ok(await _serviceFavorites.ReadById(idUser, idProduct));
+    //}
 
-    [HttpGet("all")]
-    public async Task<IActionResult> GetAll()
-    {
-        return Ok(await _serviceFavorites.ReadAll());
-    }
+    //[HttpGet("all")]
+    //public async Task<IActionResult> GetAll()
+    //{
+    //    return Ok(await _serviceFavorites.ReadAll());
+    //}
 
-    [HttpPost]
-    public async Task<IActionResult> Add([FromBody] FavoritesDto favorites)
+    [HttpPost("{idUser}/{idProduct}")]
+    public async Task<IActionResult> Add(int idUser, int idProduct)
     {
-        return Ok(await _serviceFavorites.Create(favorites));
+
+        return Ok(await _serviceFavorites.Create(
+            new FavoritesDto()
+            {
+                IdUser = idUser,
+                IdProduct = idProduct
+            }));
     }
 
     [HttpDelete("{idUser}/{idProduct}")]

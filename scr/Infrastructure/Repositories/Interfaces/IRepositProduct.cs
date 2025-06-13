@@ -10,5 +10,6 @@ namespace Infrastructure.Repositories
         Task<int?> Create(Product element);
         Task<bool> Update(Product element);
         Task<bool> Delete(int id);
+        Task<IEnumerable<Product>> GetBySection(int id);
     }
 }

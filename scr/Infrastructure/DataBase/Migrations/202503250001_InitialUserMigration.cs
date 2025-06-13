@@ -8,7 +8,7 @@ namespace Infrastructure.Database.Migrations
         public override void Up()
         {
             Create.Table("users")
-                .WithColumn("id").AsInt32().PrimaryKey().Identity()
+                .WithColumn("id").AsInt32().PrimaryKey().Identity().Unique()
                 .WithColumn("name").AsString(255).NotNullable()
                 .WithColumn("id_picture_icon").AsInt32().Nullable().ForeignKey("picture_file", "id")
             ;

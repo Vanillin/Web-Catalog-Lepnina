@@ -8,7 +8,7 @@ namespace Infrastructure.DataBase.Migrations
         public override void Up()
         {
             Create.Table("picture_file")
-                .WithColumn("id").AsInt32().PrimaryKey().Identity()
+                .WithColumn("id").AsInt32().PrimaryKey().Identity().Unique()
                 .WithColumn("file_name").AsString().NotNullable()
                 .WithColumn("stored_path").AsString().NotNullable()
                 .WithColumn("content_type").AsString().NotNullable()

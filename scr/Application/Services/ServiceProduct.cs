@@ -113,6 +113,22 @@ namespace Application.Services
             var mapElem = _mapper.Map<ProductDto>(element);
             return mapElem;
         }
+        public async Task<IEnumerable<ProductDto>> GetBySection(int idSection)
+        {
+            var allElem = await _repositProduct.GetBySection(idSection);
+            var mapAllElem = allElem.Select(q => _mapper.Map<ProductDto>(q)).ToList();
+            return mapAllElem;
+        }
+        public async Task<IEnumerable<ProductDto>> GetByFavorite(int idUser)
+        {
+            var userElem = await _repositFavorites.ReadByIdUser(idUser);
+            var products = from x
+                           in userElem
+                           select _repositProduct.ReadById(x.IdProduct).Result;
+
+            var mapElem = products.Select(q => _mapper.Map<ProductDto>(q)).ToList();
+            return mapElem;
+        }
         public async Task<bool> Update(UpdateProductRequest request)
         {
             var element = await _repositProduct.ReadById(request.Id);

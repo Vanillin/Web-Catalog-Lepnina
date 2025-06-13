@@ -1,6 +1,5 @@
 ﻿using Application.Dto;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using Application.Response;
 
 namespace Application.Services
 {
@@ -8,7 +7,7 @@ namespace Application.Services
     {
         Task<FavoritesDto?> ReadById(int idUser, int idProduct);
         Task<IEnumerable<FavoritesDto>> ReadAll();
-        Task<(int,int)?> Create(FavoritesDto element);
+        Task<CreateFavoriteResponse?> Create(FavoritesDto element);
         Task<bool> Delete(int idUser, int idProduct);
     }
 }

@@ -8,7 +8,7 @@ namespace Infrastructure.Database.Migrations
         public override void Up()
         {
             Create.Table("sections")
-                .WithColumn("id").AsInt32().PrimaryKey().Identity()
+                .WithColumn("id").AsInt32().PrimaryKey().Identity().Unique()
                 .WithColumn("name").AsString(255).NotNullable()
             ;
         }

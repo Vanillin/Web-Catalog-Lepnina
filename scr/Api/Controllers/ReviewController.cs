@@ -16,36 +16,36 @@ public class ReviewController : ControllerBase
         _serviceReview = serviceReview;
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetByIdAsync(int id)
-    {
-        return Ok(await _serviceReview.ReadById(id));
-    }
+    //[HttpGet("{id}")]
+    //public async Task<IActionResult> GetByIdAsync(int id)
+    //{
+    //    return Ok(await _serviceReview.ReadById(id));
+    //}
 
-    [HttpGet("all")]
-    public async Task<IActionResult> GetAll()
-    {
-        return Ok(await _serviceReview.ReadAll());
-    }
+    //[HttpGet("all")]
+    //public async Task<IActionResult> GetAll()
+    //{
+    //    return Ok(await _serviceReview.ReadAll());
+    //}
 
-    [Authorize]
-    [HttpPost]
-    public async Task<IActionResult> Add([FromBody] CreateReviewRequest review)
-    {
-        return Ok(await _serviceReview.Create(review));
-    }
+    //[Authorize]
+    //[HttpPost]
+    //public async Task<IActionResult> Add([FromBody] CreateReviewRequest review)
+    //{
+    //    return Ok(await _serviceReview.Create(review));
+    //}
 
-    [Authorize]
-    [HttpPut]
-    public async Task<IActionResult> Update([FromBody] UpdateReviewRequest review)
-    {
-        return Ok(await _serviceReview.Update(review));
-    }
+    //[Authorize]
+    //[HttpPut]
+    //public async Task<IActionResult> Update([FromBody] UpdateReviewRequest review)
+    //{
+    //    return Ok(await _serviceReview.Update(review));
+    //}
 
-    [Authorize]
-    [HttpDelete]
-    public async Task<IActionResult> Delete([FromQuery] int id)
-    {
-        return Ok(await _serviceReview.Delete(id));
-    }
+    //[Authorize]
+    //[HttpDelete]
+    //public async Task<IActionResult> Delete([FromQuery] int id)
+    //{
+    //    return Ok(await _serviceReview.Delete(id));
+    //}
 }

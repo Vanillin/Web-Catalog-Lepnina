@@ -93,5 +93,26 @@ namespace Infrastructure.Repositories
 
             return favorite;
         }
+
+        public async Task<IEnumerable<Favorites>> ReadByIdUser(int idUser)
+        {
+            IEnumerable<Favorites> favorites;
+            try
+            {
+                await _connection.OpenAsync();
+
+                favorites = await _connection.QueryAsync<Favorites>(@"
+                    SELECT id_user as IdUser, id_product as IdProduct FROM favorites
+                    WHERE id_user = @IdUser
+                    "
+                , new { IdUser = idUser });
+            }
+            finally
+            {
+                await _connection.CloseAsync();
+            }
+
+            return favorites;
+        }
     }
 }

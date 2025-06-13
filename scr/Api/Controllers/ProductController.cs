@@ -1,6 +1,8 @@
+using Api.Exceptions;
 using Application.Dto;
 using Application.Request;
 using Application.Services;
+using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,17 +18,60 @@ public class ProductController : ControllerBase
         _serviceProduct = serviceProduct;
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetByIdAsync(int id)
+    //[HttpGet("{id}")]
+    //public async Task<IActionResult> GetByIdAsync(int id)
+    //{
+    //    return Ok(await _serviceProduct.ReadById(id));
+    //}
+
+    //[HttpGet("all")]
+    //public async Task<IActionResult> GetAll()
+    //{
+    //    return Ok(await _serviceProduct.ReadAll());
+    //}
+
+    [HttpGet("catalog/{id}/{isFavorite}")]
+    public async Task<IActionResult> GetProductForCatalog(int id, bool isFavorite)
     {
-        return Ok(await _serviceProduct.ReadById(id));
+        var productsSection = await _serviceProduct.GetBySection(id);
+        if (productsSection == null || productsSection.Count() == 0)
+        {
+            productsSection = await _serviceProduct.ReadAll();
+        }
+
+        if (isFavorite)
+            return await GetAllByFavorite(productsSection);
+        else 
+            return Ok(productsSection);
+    }
+    [Authorize]
+    private async Task<IActionResult> GetAllByFavorite(IEnumerable<ProductDto> products)
+    {
+        var userId = User.GetUserId();
+        if (!userId.HasValue)
+            return NotFound();
+
+        var favoriteProducts = await _serviceProduct.GetByFavorite(userId.Value);
+
+        return Ok(favoriteProducts.Where(x => favoriteProducts.Contains(x)));
     }
 
-    [HttpGet("all")]
-    public async Task<IActionResult> GetAll()
-    {
-        return Ok(await _serviceProduct.ReadAll());
-    }
+    //[HttpGet("section/{id}")]
+    //public async Task<IActionResult> GetAllBySection(int id)
+    //{
+    //    return Ok(await _serviceProduct.GetBySection(id));
+    //}
+
+    //[Authorize]
+    //[HttpGet("user")]
+    //public async Task<IActionResult> GetAllByFavorite()
+    //{
+    //    var userId = User.GetUserId();
+    //    if (!userId.HasValue)
+    //        return NotFound();
+
+    //    return Ok(await _serviceProduct.GetByFavorite(userId.Value));
+    //}
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
