@@ -1,0 +1,46 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: vanillin
+      POSTGRES_PASSWORD: PQKD6%G3BCiTM9BH
+      POSTGRES_DB: vanillin
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5433:5433"
+    networks:
+      - web-catalog-network
+
+  web-catalog-lepnina:
+    image: ghcr.io/vanillin/web-catalog-lepnina:latest
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__PostgresDB=Host=db;Database=vanillin;Username=vanillin;Password=PQKD6%G3BCiTM9BH;
+    depends_on:
+      - db
+    ports:
+      - "9032:9032"
+    networks:
+      - web-catalog-network
+
+  web-catalog-lepnina-front:
+    image: ghcr.io/vanillin/web-catalog-lepnina-front:latest
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - web-catalog-lepnina
+    networks:
+      - web-catalog-network
+
+volumes:
+  pgdata:
+
+networks:
+  web-catalog-network:
+    driver: bridge
