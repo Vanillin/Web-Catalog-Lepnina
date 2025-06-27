@@ -42,7 +42,7 @@ namespace ApplicationUnitTests.Services
         }
 
         [Fact]
-        public async Task ReadById_ExistingSection_ShouldReturnSectionResponse()
+        public async Task ReadById_ValidRequest_ShouldReturnSectionResponse()
         {
             // Arrange
             _sectionRepositoryMock.Setup(x => x.ReadById(_testSection.Id))
@@ -59,7 +59,7 @@ namespace ApplicationUnitTests.Services
         }
 
         [Fact]
-        public async Task ReadAll_ExistingSection_ShouldReturnSectionResponse()
+        public async Task ReadAll_ValidRequest_ShouldReturnSectionResponse()
         {
             // Arrange
             _sectionRepositoryMock.Setup(x => x.ReadAll())
@@ -97,7 +97,7 @@ namespace ApplicationUnitTests.Services
         }
 
         [Fact]
-        public async Task Update_ExistingSection_ShouldUpdateSection()
+        public async Task Update_ValidRequest_ShouldUpdateSection()
         {
             // Arrange
             var request = new UpdateSectionRequest

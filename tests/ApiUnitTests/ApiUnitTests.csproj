@@ -19,10 +19,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\scr\Api\Api.csproj" />
-    <ProjectReference Include="..\scr\Application\Application.csproj" />
-    <ProjectReference Include="..\scr\Domain\Domain.csproj" />
-    <ProjectReference Include="..\scr\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\..\scr\Api\Api.csproj" />
+    <ProjectReference Include="..\..\scr\Application\Application.csproj" />
+    <ProjectReference Include="..\..\scr\Domain\Domain.csproj" />
+    <ProjectReference Include="..\..\scr\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
